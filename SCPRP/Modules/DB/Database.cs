@@ -22,7 +22,6 @@ namespace SCPRP.Modules.DB
     }
     public class Database : BaseModule
     {
-        public static Database Singleton;
         static MySqlConnection DB;
 
         static DatabaseConfig Config { get { return SCPRP.Singleton.Config.DatabaseConfig;  } }
