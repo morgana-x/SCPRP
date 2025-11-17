@@ -10,6 +10,7 @@ namespace SCPRP.Modules.Entity
     {
         public Dictionary<Pickup, long> MoneyPickups = new Dictionary<Pickup, long>();
 
+        static Money Singleton;
         public override void Load()
         {
             Singleton = this;
@@ -40,7 +41,7 @@ namespace SCPRP.Modules.Entity
         public static Pickup DropMoney(UnityEngine.Vector3 Position, long amount)
         {
             Pickup keycard = Pickup.Create(ItemType.KeycardJanitor, Position);
-            ((Money)Singleton).MoneyPickups.Add(keycard, amount);
+            (Singleton).MoneyPickups.Add(keycard, amount);
 
 
 
@@ -72,8 +73,8 @@ namespace SCPRP.Modules.Entity
 
         public static long GetAmount(Pickup pickup)
         {
-            if (!((Money)Singleton).MoneyPickups.ContainsKey(pickup)) return 0;
-            return ((Money)Singleton).MoneyPickups[pickup];
+            if (!Singleton.MoneyPickups.ContainsKey(pickup)) return 0;
+            return (Singleton).MoneyPickups[pickup];
         }
     }
 }

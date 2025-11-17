@@ -9,9 +9,6 @@ namespace SCPRP
 {
     public abstract class BaseModule
     {
-        public static BaseModule Singleton;
-        public BaseModule() { Singleton = this; }
-
         public abstract void Load();
         public abstract void Unload();
         public abstract void Tick();

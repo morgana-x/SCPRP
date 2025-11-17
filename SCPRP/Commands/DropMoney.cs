@@ -43,7 +43,7 @@ namespace SCPRP.Commands
             }
 
             response = $"Dropped ${amount}";
-            ((Money)SCPRP.Singleton.Modules.GetModule(typeof(Money))).DropMoney(p, amount);
+            Money.DropMoney(p, amount);
             return true;
         }
     }
