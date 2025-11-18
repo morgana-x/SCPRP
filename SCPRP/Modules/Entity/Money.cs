@@ -2,6 +2,7 @@
 using LabApi.Events.Handlers;
 using LabApi.Features.Wrappers;
 using SCPRP.Extensions;
+using SCPRP.Modules.Players;
 using System.Collections.Generic;
 
 namespace SCPRP.Modules.Entity
@@ -32,7 +33,7 @@ namespace SCPRP.Modules.Entity
             if (MoneyPickups.ContainsKey(e.Pickup))
             {
                 e.IsAllowed = false;
-                ((Modules.Players.HUD)(SCPRP.Singleton.Modules.GetModule(typeof(Modules.Players.HUD)))).ShowHint(e.Player, $"<color=green>Picked up ${MoneyPickups[e.Pickup]}</color>");
+                HUD.ShowHint(e.Player, $"<color=green>Picked up ${MoneyPickups[e.Pickup]}</color>");
                 e.Player.AddMoney(MoneyPickups[e.Pickup]);
                 e.Pickup.Destroy();
             }
@@ -63,11 +64,11 @@ namespace SCPRP.Modules.Entity
         {
             if (player.GetMoney() < amount)
             {
-                ((Modules.Players.HUD)(SCPRP.Singleton.Modules.GetModule(typeof(Modules.Players.HUD)))).ShowHint(player, "<color=red>Insufficient funds!</color>");
+                HUD.ShowHint(player, "<color=red>Insufficient funds!</color>");
                 return null;
             }
             player.AddMoney(-amount);
-            ((Modules.Players.HUD)(SCPRP.Singleton.Modules.GetModule(typeof(Modules.Players.HUD)))).ShowHint(player, $"<color=green>Dropped ${amount}</color>");
+            HUD.ShowHint(player, $"<color=green>Dropped ${amount}</color>");
             return DropMoney(player.Camera.position + (player.Camera.forward * 0.8f), amount);
         }
 

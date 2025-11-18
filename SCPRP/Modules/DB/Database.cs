@@ -22,9 +22,9 @@ namespace SCPRP.Modules.DB
     }
     public class Database : BaseModule
     {
-        static MySqlConnection DB;
+        public static MySqlConnection DB;
 
-        static DatabaseConfig Config { get { return SCPRP.Singleton.Config.DatabaseConfig;  } }
+        public static DatabaseConfig Config { get { return SCPRP.Singleton.Config.DatabaseConfig;  } }
 
         public override void Load()
         {

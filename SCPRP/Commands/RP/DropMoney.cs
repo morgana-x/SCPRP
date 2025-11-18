@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using CommandSystem;
 using LabApi.Features.Wrappers;
 using SCPRP.Extensions;
 using SCPRP.Modules.Entity;
-namespace SCPRP.Commands
+
+namespace SCPRP.Commands.RP
 {
     [CommandHandler(typeof(ClientCommandHandler))]
     public class DropMoney : ParentCommand, ICommand
@@ -15,7 +15,6 @@ namespace SCPRP.Commands
 
         public override string[] Aliases { get; } = new string[] { "dropcash" };
         public override void LoadGeneratedCommands() { }
-        public static Dictionary<string, DateTime> Cooldowns = new Dictionary<string, DateTime>();
 
         protected override bool ExecuteParent(ArraySegment<string> args, ICommandSender sender, out string response)
         {

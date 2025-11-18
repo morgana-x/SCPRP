@@ -1,4 +1,5 @@
 ﻿using SCPRP.Modules.DB;
+using SCPRP.Modules.Entity;
 
 namespace SCPRP
 {
@@ -7,5 +8,6 @@ namespace SCPRP
     {
         public DatabaseConfig DatabaseConfig { get; set; } = new DatabaseConfig();
 
+        public DoorsConfig DoorsConfig { get; set; } = new DoorsConfig();
     }
 }

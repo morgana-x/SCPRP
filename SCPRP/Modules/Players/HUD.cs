@@ -22,7 +22,7 @@ namespace SCPRP.Modules.Players
             }
         }
 
-        public void ShowHint(LabApi.Features.Wrappers.Player pl, string text, float duration = 5f)
+        public static void ShowHint(LabApi.Features.Wrappers.Player pl, string text, float duration = 5f)
         {
             var moneytag = new RueI.API.Elements.BasicElement(5f,text);
             RueI.API.RueDisplay.Get(pl).Show(moneytag, duration);
