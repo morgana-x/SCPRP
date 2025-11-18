@@ -56,9 +56,9 @@ namespace SCPRP.Modules.Entity
                 text += $"{t}</align><br>";
 
             if (Owner != null) 
-                text += $"<color={Owner.GroupColor}>{Owner.DisplayName}</color><br>";
+                text += $"<color {Owner.RoleBase.RoleColor.ToHex()}>{Owner.DisplayName}</color><br>";
             foreach (var coowner in Coowners)
-                text += $"<color={coowner.GroupColor}>{coowner.DisplayName}</color><br>";
+                text += $"<color {coowner.RoleBase.RoleColor.ToHex()}>{coowner.DisplayName}</color><br>";
 
             foreach (var t in TextScreens)
             {
