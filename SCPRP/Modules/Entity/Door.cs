@@ -1,8 +1,11 @@
-﻿using Interactables.Interobjects.DoorUtils;
+﻿using CommandSystem.Commands.RemoteAdmin.Doors;
+using Interactables.Interobjects.DoorUtils;
 using LabApi.Events.Arguments.PlayerEvents;
+using LabApi.Events.Arguments.ServerEvents;
 using LabApi.Features.Wrappers;
 using SCPRP.Extensions;
 using SCPRP.Modules.Players;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UserSettings.ServerSpecific;
@@ -26,12 +29,15 @@ namespace SCPRP.Modules.Entity
         public List<string> Teams = new List<string>();
         public Player Owner = null;
         public List<Player> Coowners = new List<Player>();
+
+
+        public DateTime nextRepair = DateTime.Now;
         public RPDoor(LabApi.Features.Wrappers.Door door, int price=1000)
         {
             Door = door;
             Price = price;
             TextScreens = new TextToy[2];
-            TextScreens[0] = TextToy.Create((new UnityEngine.Vector3(0,0,1) * 0.15f) + (new UnityEngine.Vector3(0, 1, 0) * 1.25f), UnityEngine.Quaternion.Euler(new UnityEngine.Vector3(0, 180, 0)), door.Transform);
+            TextScreens[0] = TextToy.Create((new UnityEngine.Vector3(0,0,1) * 0.25f) + (new UnityEngine.Vector3(0, 1, 0) * 1.25f), UnityEngine.Quaternion.Euler(new UnityEngine.Vector3(0, 180, 0)), door.Transform);
             TextScreens[1] = TextToy.Create((new UnityEngine.Vector3(0,0,-1) * 0.25f) + (new UnityEngine.Vector3(0, 1, 0) * 1.25f), UnityEngine.Quaternion.Euler(new UnityEngine.Vector3(0, 0, 0)), door.Transform);
             UpdateText();
             TextVisible(true);
@@ -140,6 +146,7 @@ namespace SCPRP.Modules.Entity
     public class Door : BaseModule
     {
         public Dictionary<LabApi.Features.Wrappers.Door, RPDoor> Doors = new Dictionary<LabApi.Features.Wrappers.Door, RPDoor>();
+
         public static RPDoor GetRPDoor(LabApi.Features.Wrappers.Door door)
         {
             if (Singleton.Doors.ContainsKey(door)) return Singleton.Doors[door];
@@ -164,12 +171,14 @@ namespace SCPRP.Modules.Entity
             Singleton = this;
             LabApi.Events.Handlers.ServerEvents.WaitingForPlayers += MapGenerated;
             LabApi.Events.Handlers.PlayerEvents.Left += PlayerLeft;
+            LabApi.Events.Handlers.ServerEvents.DoorDamaged += DoorDamaged;
             ServerSpecificSettingsSync.ServerOnSettingValueReceived += KeyPressedBuyDoor;
         }
         public override void Unload()
         {
             LabApi.Events.Handlers.ServerEvents.WaitingForPlayers -= MapGenerated;
             LabApi.Events.Handlers.PlayerEvents.Left -= PlayerLeft;
+            LabApi.Events.Handlers.ServerEvents.DoorDamaged -= DoorDamaged;
             ServerSpecificSettingsSync.ServerOnSettingValueReceived -= KeyPressedBuyDoor;
             Doors.Clear();
         }
@@ -178,6 +187,15 @@ namespace SCPRP.Modules.Entity
         {
             foreach (var d in GetOwnedDoors(e.Player))
                 d.SetOwner(null);
+        }
+
+        void DoorDamaged(DoorDamagedEventArgs e)
+        {
+            var door = GetRPDoor(e.Door);
+            if (door == null) return;
+
+            if (e.Door.IsDestroyed && door.nextRepair < DateTime.Now)
+                door.nextRepair = DateTime.Now.AddSeconds(180);
         }
         
         void KeyPressedBuyDoor(ReferenceHub hub, ServerSpecificSettingBase b)
@@ -208,7 +226,12 @@ namespace SCPRP.Modules.Entity
 
         public override void Tick()
         {
-            
+            foreach(var d in Doors)
+            {
+                if (!d.Key.IsDestroyed) continue;
+                if (DateTime.Now < d.Value.nextRepair) continue;
+                (d.Key.Base as IDamageableDoor).ServerRepair();
+            }
         }
 
 
