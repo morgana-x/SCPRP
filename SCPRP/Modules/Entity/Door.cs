@@ -2,6 +2,7 @@
 using Interactables.Interobjects.DoorUtils;
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Arguments.ServerEvents;
+using LabApi.Features.Console;
 using LabApi.Features.Wrappers;
 using SCPRP.Extensions;
 using SCPRP.Modules.Players;
@@ -194,8 +195,14 @@ namespace SCPRP.Modules.Entity
             var door = GetRPDoor(e.Door);
             if (door == null) return;
 
-            if (e.Door.IsDestroyed && door.nextRepair < DateTime.Now)
+            if (!(e.Door.Base is IDamageableDoor)) return;
+
+            var dmgdoor = (IDamageableDoor)e.Door.Base;
+
+            if ((dmgdoor.IsDestroyed || dmgdoor.RemainingHealth <= 0))
+            {
                 door.nextRepair = DateTime.Now.AddSeconds(180);
+            }
         }
         
         void KeyPressedBuyDoor(ReferenceHub hub, ServerSpecificSettingBase b)
@@ -228,9 +235,11 @@ namespace SCPRP.Modules.Entity
         {
             foreach(var d in Doors)
             {
-                if (!d.Key.IsDestroyed) continue;
+                if (!(d.Key.Base is IDamageableDoor)) continue;
                 if (DateTime.Now < d.Value.nextRepair) continue;
-                (d.Key.Base as IDamageableDoor).ServerRepair();
+                var door = (d.Key.Base as IDamageableDoor);
+                if (!door.IsDestroyed) continue;
+                door.ServerRepair();
             }
         }
 

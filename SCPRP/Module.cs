@@ -13,7 +13,7 @@ namespace SCPRP
         public abstract void Unload();
         public abstract void Tick();
     }
-    public class ModuleManager
+    public class Module
     {
 
         public Dictionary<Type, object> LoadedModules = new Dictionary<Type, object>();
@@ -27,9 +27,7 @@ namespace SCPRP
                        .ToList();
 
            foreach (var type in classes.Where((x) => { return x.IsSubclassOf(typeof(BaseModule)); }))
-           {
                 AddModule(type);
-           }
 
             moduleTickHandle = Timing.RunCoroutine(Tick());
         }
@@ -52,13 +50,11 @@ namespace SCPRP
 
         public void Unload()
         {
-            foreach (var pair in LoadedModules)
-            {
-                ((BaseModule)pair.Value).Unload();
-            }
-            LoadedModules.Clear();
-
             Timing.KillCoroutines(moduleTickHandle);
+            foreach (var pair in LoadedModules)
+                ((BaseModule)pair.Value).Unload();
+
+            LoadedModules.Clear();
         }
 
         private IEnumerator<float> Tick()

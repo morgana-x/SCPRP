@@ -11,23 +11,33 @@ namespace SCPRP.Modules.Item
 
         public LabApi.Features.Wrappers.KeycardItem GiveKeys(Player p)
         {
-            Logger.Info("Gave keys " + p.DisplayName);
-           
             return KeycardItem.CreateCustomKeycardMetal(p, "Keys", p.DisplayName, "Keys", new KeycardLevels(DoorPermissionFlags.All), UnityEngine.Color.cyan, UnityEngine.Color.blue, UnityEngine.Color.gray, 2, "123456789123");
         }
         public override void Load()
         {
             LabApi.Events.Handlers.PlayerEvents.InteractingDoor += InteractingDoor;
             LabApi.Events.Handlers.PlayerEvents.ReceivedLoadout += PlayerSpawned;
+            LabApi.Events.Handlers.PlayerEvents.DroppingItem += PlayerDropping;
         }
         public override void Unload()
         {
             LabApi.Events.Handlers.PlayerEvents.InteractingDoor -= InteractingDoor;
             LabApi.Events.Handlers.PlayerEvents.ReceivedLoadout -= PlayerSpawned;
+            LabApi.Events.Handlers.PlayerEvents.DroppingItem -= PlayerDropping;
         }
         public override void Tick()
         {
            
+        }
+
+        void PlayerDropping(PlayerDroppingItemEventArgs e)
+        {
+            var item = e.Item;
+            bool holdingkeys = item != null && item is LabApi.Features.Wrappers.KeycardItem && ((LabApi.Features.Wrappers.KeycardItem)item).Type == ItemType.KeycardCustomMetalCase;
+
+            if (e.Player.CurrentItem == null || !holdingkeys)
+                return;
+            e.IsAllowed = false;
         }
         void PlayerSpawned(PlayerReceivedLoadoutEventArgs e)
         {

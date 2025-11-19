@@ -16,7 +16,8 @@ namespace SCPRP
 
         public override Version RequiredApiVersion => new Version(LabApiProperties.CompiledVersion);
 
-        public ModuleManager Modules;
+        public Module Modules;
+        public Entity Entities;
 
         public static SCPRP Singleton;
 
@@ -24,13 +25,18 @@ namespace SCPRP
         public override void Enable()
         {
             Singleton = this;
-            Modules = new ModuleManager();
+
+            Modules = new Module();
             Modules.Load();
+
+            Entities = new Entity();
+            Entities.Load();
         }
 
         public override void Disable()
         {
             Modules.Unload();
+            Entities.Unload();
         }
 
 
