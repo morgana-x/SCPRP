@@ -180,7 +180,7 @@ namespace SCPRP.Modules.Players
                 PlayerBadges.Remove(e.Player);
         }
 
-        public static void SetRole(Player player, string role)
+        public static void SetJob(Player player, string role)
         {
             if (!Singleton.PlayerRoles.ContainsKey(player))
                 Singleton.PlayerRoles.Add(player, role);
@@ -191,7 +191,7 @@ namespace SCPRP.Modules.Players
         public static string GetJob(Player player)
         {
             if (!Singleton.PlayerRoles.ContainsKey(player))
-                SetRole(player, SCPRP.Singleton.Config.JobConfig.DefaultRole);
+                SetJob(player, SCPRP.Singleton.Config.JobConfig.DefaultRole);
 
             return Singleton.PlayerRoles[player];
         }
