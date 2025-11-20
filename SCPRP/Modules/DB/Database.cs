@@ -58,13 +58,15 @@ namespace SCPRP.Modules.DB
 
             long value = 0;
             if (rd.Read())
+            {
                 value = rd.GetInt64(0);
+            }
             else // If there's no entry for the player, set their money to the starting amount
             {
+                rd.Close();
                 SetMoney(userid, SCPRP.Singleton.Config.MoneyConfig.StartingMoney);
                 value = SCPRP.Singleton.Config.MoneyConfig.StartingMoney;
             }
-
             rd.Close();
             cmd.Dispose();
             return value;
