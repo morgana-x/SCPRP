@@ -20,6 +20,12 @@ namespace SCPRP.Modules.DB
 
         public string table { get; set; } = "rp_money";
     }
+
+    public class MoneyConfig
+    {
+        public int StartingMoney { get; set; } = 20000;
+    }
+
     public class Database : BaseModule
     {
         public static MySqlConnection DB;
@@ -53,6 +59,11 @@ namespace SCPRP.Modules.DB
             long value = 0;
             if (rd.Read())
                 value = rd.GetInt64(0);
+            else // If there's no entry for the player, set their money to the starting amount
+            {
+                SetMoney(userid, SCPRP.Singleton.Config.MoneyConfig.StartingMoney);
+                value = SCPRP.Singleton.Config.MoneyConfig.StartingMoney;
+            }
 
             rd.Close();
             cmd.Dispose();

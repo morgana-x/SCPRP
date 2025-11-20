@@ -46,7 +46,7 @@ namespace SCPRP.Modules.Item
         }
         void InteractingDoor(PlayerInteractingDoorEventArgs e)
         {
-            var rpdoor = Entity.Door.GetRPDoor(e.Door);
+            var rpdoor = Entities.Door.GetRPDoor(e.Door);
             if (rpdoor == null) return;
 
             var item = e.Player.CurrentItem;

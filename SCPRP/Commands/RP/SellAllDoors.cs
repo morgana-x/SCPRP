@@ -20,7 +20,7 @@ namespace SCPRP.Commands.RP
 
             var p = Player.Get(sender);
             
-            Modules.Entity.Door.SellAll(p);
+            Modules.Entities.Door.SellAll(p);
 
             response = $"Sold all doors!";
             return true;

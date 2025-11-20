@@ -7,6 +7,7 @@ namespace SCPRP.Entities
 {
     public class spawned_money : BaseEntity
     {
+        public override string Name => "Spawned Money";
         public override float MaxHealth => 1;
 
         private long _amount = 0;

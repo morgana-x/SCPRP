@@ -3,7 +3,7 @@ using SCPRP.Entities;
 using SCPRP.Extensions;
 using SCPRP.Modules.Players;
 
-namespace SCPRP.Modules.Entity
+namespace SCPRP.Modules.Entities
 {
     public class Money : BaseModule
     {

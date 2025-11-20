@@ -30,7 +30,7 @@ namespace SCPRP.Commands.Admin
                 return false;
             }
 
-            Modules.Entity.Door.SellAll(pl);
+            Modules.Entities.Door.SellAll(pl);
             response = $"Force sold {pl.DisplayName}'s doors!!";
             return true;
         }

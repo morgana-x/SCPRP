@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UserSettings.ServerSpecific;
 
-namespace SCPRP.Modules.Entity
+namespace SCPRP.Modules.Entities
 {
 
     public class DoorsConfig
@@ -114,7 +114,7 @@ namespace SCPRP.Modules.Entity
                 p.Notify("<color=red>You can't afford this door!</color>");
                 return;
             }
-            if (Entity.Door.GetOwnedDoors(p).Count >= SCPRP.Singleton.Config.DoorsConfig.MaxDoors)
+            if (Entities.Door.GetOwnedDoors(p).Count >= SCPRP.Singleton.Config.DoorsConfig.MaxDoors)
             {
                 p.Notify("<color=red>Reached max amount of doors!</color>");
                 return;

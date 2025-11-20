@@ -3,7 +3,7 @@ using System.Linq;
 using CommandSystem;
 using LabApi.Features.Wrappers;
 using SCPRP.Extensions;
-using SCPRP.Modules.Entity;
+using SCPRP.Modules.Entities;
 
 namespace SCPRP.Commands.RP
 {

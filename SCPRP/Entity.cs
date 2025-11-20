@@ -18,6 +18,7 @@ namespace SCPRP
 {
     public abstract class BaseEntity
     {
+        public abstract string Name { get; }
         public GameObject CoreObject;
         public InteractableToy Interactable;
         public Pickup InteractablePickup;
@@ -190,6 +191,15 @@ namespace SCPRP
             ent.Owner = owner;
             ent.Spawn(pos, rotation);
             return ent;
+        }
+
+        public List<BaseEntity> GetEntities(Player p, string id="")
+        {
+            return Entities.Where((x) =>
+            {
+                return (x.Owner != null && x.Owner == p) && (id == "" || (x.GetType().Name == id));
+            }
+            ).ToList();
         }
     }
 }

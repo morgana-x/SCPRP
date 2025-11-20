@@ -11,6 +11,7 @@ namespace SCPRP.Entities
 {
     public class money_printer : BaseEntity
     {
+        public override string Name => "Money Printer";
         public override float MaxHealth => 50;
 
         DateTime nextPrint = DateTime.Now;
