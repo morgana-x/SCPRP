@@ -10,7 +10,11 @@ namespace SCPRP.Modules.Players
     {
         public string Entity { get; set; }
         public int Price { get; set; }
-        public int Max = 1;
+        public int Max { get; set; } = 1;
+
+        public bool IsShipment { get; set; } = false;
+        public int ShipmentAmount { get; set; } = 10;
+
         public List<string> AllowedJobs = new List<string>();
 
         public ShopItem() { }
@@ -21,6 +25,7 @@ namespace SCPRP.Modules.Players
             Max = max;
         }
 
+    
         public bool CanPurchase(Player pl)
         { 
             return AllowedJobs.Count == 0 || AllowedJobs.Contains(Job.GetJob(pl));
@@ -29,6 +34,7 @@ namespace SCPRP.Modules.Players
 
     public class ShopConfig
     {
+        public int MaxShipments { get; set; } = 10;
         public List<ShopItem> Items { get; set; } = new List<ShopItem>()
         {
             new ShopItem("money_printer", 2000, 3)
