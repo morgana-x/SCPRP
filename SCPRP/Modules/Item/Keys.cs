@@ -56,7 +56,14 @@ namespace SCPRP.Modules.Item
                 return;
 
 
-            if (!rpdoor.HasPermission(e.Player)) return;
+            if (!rpdoor.HasPermission(e.Player))
+            {
+                if (!SCPRP.Singleton.Config.DoorsConfig.KeysCanActAsKeycard)
+                {
+                    e.IsAllowed = false;
+                }
+                return;
+            }
             e.IsAllowed = false;
             rpdoor.Door.Lock(DoorLockReason.AdminCommand, !rpdoor.Door.IsLocked);
         }

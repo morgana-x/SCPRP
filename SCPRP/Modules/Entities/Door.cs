@@ -16,6 +16,7 @@ namespace SCPRP.Modules.Entities
 
     public class DoorsConfig
     {
+        public bool KeysCanActAsKeycard { get; set; } = false;
         public int MaxDoors { get; set; } = 4;
     }
 
