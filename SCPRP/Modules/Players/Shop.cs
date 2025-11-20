@@ -11,7 +11,7 @@ namespace SCPRP.Modules.Players
         public string Entity { get; set; }
         public int Price { get; set; }
         public int Max = 1;
-        public bool TeamOnly { get; set; }
+        public List<string> AllowedJobs = new List<string>();
 
         public ShopItem() { }
         public ShopItem(string entity, int price, int max)
@@ -22,8 +22,8 @@ namespace SCPRP.Modules.Players
         }
 
         public bool CanPurchase(Player pl)
-        {
-            return true;
+        { 
+            return AllowedJobs.Count == 0 || AllowedJobs.Contains(Job.GetJob(pl));
         }
     }
 
