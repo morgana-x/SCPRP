@@ -1,8 +1,11 @@
 ﻿using Interactables.Interobjects.DoorUtils;
 using InventorySystem.Items.Pickups;
 using LabApi.Features.Wrappers;
+using SCPRP.Extensions;
+using SCPRP.Modules.Players;
 using System;
 using UnityEngine;
+using Utils;
 
 namespace SCPRP.Entities
 {
@@ -14,36 +17,43 @@ namespace SCPRP.Entities
 
         private long _amount;
 
-        public long IncreaseRate = 30;
+        public long IncreaseRate = 100;
         public int Rate = 30;
         public long Amount { get {  return _amount; } set { _amount = value; UpdateText(); } }
 
 
         TextToy amountScreen;
-        public override void OnCreate(Vector3 position)
+        public override void OnCreate(Vector3 position, Quaternion rotation)
         {
     
-            var primitive = PrimitiveObjectToy.Create(position, networkSpawn:true);
+            var primitive = PrimitiveObjectToy.Create(position, rotation, networkSpawn: false);
             primitive.Type = PrimitiveType.Cube;
             primitive.Scale = new Vector3(0.6f, 0.2f, 0.6f);
             primitive.Color = Color.white;
+            primitive.SyncInterval = 0.1f;
+            primitive.MovementSmoothing = 200;
+            primitive.IsStatic = false;
 
             primitive.Base.gameObject.AddComponent<Rigidbody>();
 
-            var interactable = InteractableToy.Create(new Vector3(0,0,0), primitive.Base.gameObject.transform, networkSpawn:true);
-            interactable.Scale = primitive.Scale * 1.1f;
+            primitive.Spawn();
 
+            var interactable = InteractableToy.Create(new Vector3(0,0,0), primitive.Transform, networkSpawn:false);
+            interactable.Shape = AdminToys.InvisibleInteractableToy.ColliderShape.Box;
+            interactable.Scale = new Vector3(1.1f, 1.1f, 1.1f);
+            interactable.IsStatic = false;
+            interactable.Spawn();
 
-            amountScreen = TextToy.Create(new Vector3(0, 0.25f, -0.1f), Quaternion.Euler(90, 0, 0), primitive.Base.gameObject.transform, true);
-            amountScreen.Scale = new Vector3(0.2f, 0.2f, 0.2f);
-
+            amountScreen = TextToy.Create((primitive.Transform.up * 0.52f), Quaternion.Euler(90, 0, 0), primitive.Transform, networkSpawn: false);
+            amountScreen.Scale = new Vector3(0.15f, 0.15f, 0.15f);
+            amountScreen.IsStatic = false;
+            amountScreen.Spawn();
 
             CoreObject = primitive.GameObject;
             Interactable = interactable;
 
-            primitive.Spawn();
-            interactable.Spawn();
-            amountScreen.Spawn();
+ 
+
 
             UpdateText();
             nextPrint = DateTime.Now.AddSeconds(Rate);
@@ -51,22 +61,30 @@ namespace SCPRP.Entities
 
         public override void OnDamage(Player player, int amount)
         {
-            
+            Health -= amount;
+            if (Health <= 0) Destroy();
         }
 
         public override void OnDestroy()
         {
-            
+            ExplosionUtils.ServerSpawnEffect(CoreObject.transform.position, ItemType.GrenadeHE);
         }
 
         public override void OnInteract(Player player)
         {
-            
+            if (Amount <= 0) return;
+            var amount = Amount;
+            Amount = 0;
+            player.AddMoney(amount);
+            HUD.ShowHint(player, $"<color #55ff55>Picked up {amount}!</color>");
+            UpdateText();
         }
 
         void UpdateText()
         {
-            amountScreen.TextFormat = $"<color #55ff55>${_amount}</color>";
+            amountScreen.TextFormat = $"<color #55ff55>${_amount}</color><br>";
+            if (Owner != null) 
+                amountScreen.TextFormat += $"<color {Owner.RoleBase.RoleColor.ToHex()}>{Owner.DisplayName}</color>";
         }
 
         public override void OnTick()

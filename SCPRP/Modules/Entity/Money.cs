@@ -8,11 +8,11 @@ namespace SCPRP.Modules.Entity
     public class Money : BaseModule
     {
      
-        public static BaseEntity DropMoney(UnityEngine.Vector3 Position, long amount)
+        public static BaseEntity DropMoney(UnityEngine.Vector3 Position, UnityEngine.Quaternion Rotation, long amount)
         {
             var dropped_money = SCPRP.Singleton.Entities.CreateEntity("spawned_money");
             ((spawned_money)dropped_money).Amount = amount;
-            dropped_money.Spawn(Position);
+            dropped_money.Spawn(Position, Rotation);
             return dropped_money;
         }
 
@@ -25,7 +25,7 @@ namespace SCPRP.Modules.Entity
             }
             player.AddMoney(-amount);
             HUD.ShowHint(player, $"<color=green>Dropped ${amount}</color>");
-            return DropMoney(player.Camera.position + (player.Camera.forward * 0.8f), amount);
+            return DropMoney(player.Camera.position + (player.Camera.forward * 0.8f), UnityEngine.Quaternion.Euler(player.Rotation.eulerAngles.x, 0, 0), amount);
         }
 
         public override void Load()

@@ -2,6 +2,7 @@
 using System.Linq;
 using CommandSystem;
 using LabApi.Features.Wrappers;
+using UnityEngine;
 
 namespace SCPRP.Commands.RP
 {
@@ -25,7 +26,9 @@ namespace SCPRP.Commands.RP
             }
 
             response = "Attempting to spawn " + args.First();
-            SCPRP.Singleton.Entities.SpawnEntity(args.First(), pl.Camera.position + pl.Camera.forward);
+            var prot = pl.Rotation.eulerAngles;
+            var rot = UnityEngine.Quaternion.Euler(prot.x, 0, 0);
+            var ent = SCPRP.Singleton.Entities.SpawnEntity(args.First(), pl.Camera.position + pl.Camera.forward, rot, owner:pl);
             return true;
         }
     }

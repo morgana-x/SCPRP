@@ -14,9 +14,9 @@ namespace SCPRP.Entities
 
         TextToy t1;
         TextToy t2;
-        public override void OnCreate(Vector3 Position)
+        public override void OnCreate(Vector3 position, Quaternion rotation)
         {
-            this.InteractablePickup = Pickup.Create(ItemType.KeycardJanitor, Position);
+            this.InteractablePickup = Pickup.Create(ItemType.KeycardJanitor, position, rotation);
             this.CoreObject = this.InteractablePickup.GameObject;
 
 
