@@ -1,18 +1,13 @@
 ﻿using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Handlers;
-using LabApi.Features.Console;
 using LabApi.Features.Wrappers;
 using MEC;
 using Mirror;
-using SCPRP.Extensions;
-using SCPRP.Modules.Players;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Reflection;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace SCPRP
 {
@@ -23,7 +18,14 @@ namespace SCPRP
         public InteractableToy Interactable;
         public Pickup InteractablePickup;
 
-        public Player Owner;
+        public Player Owner { get {
+              bool result = Player.TryGet(OwnerUserId, out Player player);
+                if (!result) return null;
+                return player;
+
+         } set { _owner = value; if (_owner != null) { OwnerUserId = _owner.UserId; } } }
+        private Player _owner;
+        public string OwnerUserId;
         public abstract void OnTick();
         public abstract void OnInteract(Player player);
         public abstract void OnDamage(Player player, int amount);
@@ -197,7 +199,7 @@ namespace SCPRP
         {
             return Entities.Where((x) =>
             {
-                return (x.Owner != null && x.Owner == p) && (id == "" || (x.GetType().Name == id));
+                return (x.Owner != null && (x.Owner == p || x.OwnerUserId == p.UserId)) && (id == "" || (x.GetType().Name == id));
             }
             ).ToList();
         }

@@ -1,6 +1,4 @@
-﻿using Interactables.Interobjects.DoorUtils;
-using InventorySystem.Items.Pickups;
-using LabApi.Features.Wrappers;
+﻿using LabApi.Features.Wrappers;
 using SCPRP.Extensions;
 using SCPRP.Modules.Players;
 using System;
