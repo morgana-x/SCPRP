@@ -1,5 +1,6 @@
 ﻿
 using LabApi.Features.Wrappers;
+using SCPRP.Entities;
 using SCPRP.Extensions;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace SCPRP.Modules.Players
         public bool IsShipment { get; set; } = false;
         public int ShipmentAmount { get; set; } = 10;
 
-        public List<string> AllowedJobs = new List<string>();
+        public List<string> AllowedJobs { get; set; } = new List<string>();
 
         public ShopItem() { }
         public ShopItem(string entity, int price, int max)
@@ -28,16 +29,66 @@ namespace SCPRP.Modules.Players
     
         public bool CanPurchase(Player pl)
         { 
-            return AllowedJobs.Count == 0 || AllowedJobs.Contains(Job.GetJob(pl));
+            return AllowedJobs.IsEmpty() || AllowedJobs.Contains(Job.GetJob(pl));
         }
     }
+
+    public class ShipItem : ShopItem
+    {
+        public ShipItem(ItemType type, int price, List<string> allowedJobs, int shipamount = 5)
+        {
+            Price = price;
+            Entity = System.Enum.GetName(typeof(ItemType), type);
+            ShipmentAmount = shipamount;
+            AllowedJobs = allowedJobs;
+            IsShipment = true;
+        }
+        public ShipItem(ItemType type, int price, int shipamount = 5)
+        {
+
+            Price = price;
+            Entity = System.Enum.GetName(typeof(ItemType), type);
+            ShipmentAmount = shipamount;
+            IsShipment = true;
+        }
+
+    }
+
 
     public class ShopConfig
     {
         public int MaxShipments { get; set; } = 10;
         public List<ShopItem> Items { get; set; } = new List<ShopItem>()
         {
-            new ShopItem("money_printer", 2000, 3)
+            new ShopItem("money_printer", 2000, 3),
+
+            new ShipItem(ItemType.Ammo12gauge, 1000, 1),
+            new ShipItem(ItemType.Ammo44cal, 1000, 1),
+            new ShipItem(ItemType.Ammo556x45, 1000, 1),
+            new ShipItem(ItemType.Ammo762x39, 1000, 1),
+            new ShipItem(ItemType.Ammo9x19, 1000, 1),
+
+            new ShipItem(ItemType.Medkit, 6000, new List<string>(){"medic" }, shipamount:3  ),
+            new ShipItem(ItemType.Painkillers, 2000, new List<string>(){"medic" }, shipamount:4  ),
+
+            new ShipItem(ItemType.GrenadeHE, 15000, new List<string>(){"gundealer" }, shipamount:3 ),
+            new ShipItem(ItemType.GrenadeFlash, 10000, new List<string>(){"gundealer" }, shipamount:3 ),
+
+            new ShipItem(ItemType.GunAK, 4000, new List<string>(){"gundealer" } ,shipamount:1 ),
+            new ShipItem(ItemType.GunCrossvec, 3000, new List<string>(){"gundealer" } , shipamount:1 ),
+
+            new ShipItem(ItemType.GunCOM18, 1100, new List<string>(){"gundealer" }  , shipamount : 3),
+            new ShipItem(ItemType.GunCOM15, 1000, new List<string>(){"gundealer" }  , shipamount : 3),
+
+            new ShipItem(ItemType.GunShotgun, 3500, new List<string>(){"gundealer" } ,shipamount : 1 ),
+            new ShipItem(ItemType.GunRevolver, 1900, new List<string>(){"gundealer" } ,shipamount : 1 ),
+
+            new ShipItem(ItemType.GunE11SR, 5000, new List<string>(){"gundealer" } ,shipamount : 1 ),
+            new ShipItem(ItemType.GunFRMG0, 2000, new List<string>(){"gundealer" } ,shipamount : 1 ),
+
+            new ShipItem(ItemType.ArmorLight, 4000, new List<string>(){"gundealer" }, shipamount:1  ),
+            new ShipItem(ItemType.ArmorCombat, 6000, new List<string>(){"gundealer" }, shipamount:1  ),
+            new ShipItem(ItemType.ArmorHeavy, 8000, new List<string>(){"gundealer" }, shipamount:1  ),
         };
 
     }
@@ -60,7 +111,7 @@ namespace SCPRP.Modules.Players
 
         public static List<ShopItem> GetAvaiableItems(Player pl)
         {
-            return shopConfig.Items.Where((x) => { return x.CanPurchase(pl); }).ToList();
+            return SCPRP.Singleton.Config.ShopConfig.Items.Where((x) => { return x.CanPurchase(pl); }).ToList();
         }
 
         public static List<ShopItem> GetItems()
@@ -75,11 +126,41 @@ namespace SCPRP.Modules.Players
             return result.First();
         }
 
+        
+        public static void SpawnShipment(Player p, ShopItem item)
+        {
+            if (!System.Enum.TryParse(item.Entity, out ItemType gameItem))
+            {
+                HUD.ShowHint(p, $"<color #ff5555>ERROR SHIPMENT ITEM WAS INVALID</color>");
+                return;
+            }
+
+            if (item.ShipmentAmount == 1)
+            {
+                Pickup pickup;
+                if (System.Enum.GetName(typeof(ItemType), gameItem).StartsWith("Ammo"))
+                {
+                    pickup = AmmoPickup.Create(gameItem, p.Camera.position + p.Camera.forward * 0.5f);
+                    ((AmmoPickup)pickup).Ammo = 100;
+                }
+                else
+                    pickup = Pickup.Create(gameItem, p.Camera.position + p.Camera.forward * 0.5f);
+
+                pickup.Spawn();
+                return;
+            }
+
+            var ship = (spawned_shipment)Entity.Singleton.CreateEntity("spawned_shipment");
+            ship.Owner = p;
+            ship.SetItem(gameItem, item.ShipmentAmount, item.ShipmentAmount, p.Camera.position + p.Camera.forward * 0.5f, UnityEngine.Quaternion.Euler(0,0,0));
+            Entity.Singleton.AddSpawnedEntity(ship);
+        }
+
         public static void BuyItem(Player p, ShopItem item)
         {
-            if (Entity.Singleton.GetEntities(p, item.Entity).Count >= item.Max)
+            if (!item.CanPurchase(p))
             {
-                HUD.ShowHint(p, $"<color #ff5555>Reached limit of {item.Max} {item.Entity}s!</color>");
+                HUD.ShowHint(p, $"<color #ff5555>Not allowed to purchase this entity! Wrong job/rank!</color>");
                 return;
             }
             if (p.GetMoney() < item.Price)
@@ -87,9 +168,24 @@ namespace SCPRP.Modules.Players
                 HUD.ShowHint(p, $"<color #ff5555>Cannot afford this entity!</color>");
                 return;
             }
+            if (!item.IsShipment && Entity.Singleton.GetEntities(p, item.Entity).Count >= item.Max)
+            {
+                HUD.ShowHint(p, $"<color #ff5555>Reached limit of {item.Max} {item.Entity}s!</color>");
+                return;
+            }
+            else if (item.IsShipment && item.ShipmentAmount > 1 && Entity.Singleton.GetEntities(p, "spawned_shipment").Count >= shopConfig.MaxShipments)
+            {
+                HUD.ShowHint(p, $"<color #ff5555>Reached limit of {shopConfig.MaxShipments} spawned_shipments!</color>");
+                return;
+            }
+
             p.AddMoney(-item.Price);
             HUD.ShowHint(p, $"<color #55ff55>Purchased {item.Entity} for ${item.Price}!</color>");
-            Entity.Singleton.SpawnEntity(item.Entity, p.Camera.position + p.Camera.forward*0.85f, p);
+
+            if (item.IsShipment)
+                SpawnShipment(p, item);
+            else
+                Entity.Singleton.SpawnEntity(item.Entity, p.Camera.position + p.Camera.forward*0.85f, p);
         }
 
         public override void Tick()

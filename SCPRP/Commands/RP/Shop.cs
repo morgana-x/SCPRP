@@ -29,7 +29,7 @@ namespace SCPRP.Commands.RP
             {
                 response = "\n====== Items ======\n";
                 foreach (var i in Modules.Players.Shop.GetAvaiableItems(p))
-                    response += $"= {i.Entity} ${i.Price} ({Entity.Singleton.GetEntities(p, i.Entity).Count}/{i.Max})\n";
+                    response += $"= {i.Entity} ${i.Price} ({ (i.IsShipment ? Entity.Singleton.GetEntities(p, "spawned_shipment").Count :  Entity.Singleton.GetEntities(p, i.Entity).Count)}/{ (i.IsShipment ? SCPRP.Singleton.Config.ShopConfig.MaxShipments : i.Max)})\n";
                 response += "==================";
                 return true;
             }

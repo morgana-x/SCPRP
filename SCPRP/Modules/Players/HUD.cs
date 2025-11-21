@@ -17,8 +17,12 @@ namespace SCPRP.Modules.Players
             nextHUD = DateTime.Now.AddSeconds(0.5f);
             foreach (var p in LabApi.Features.Wrappers.Player.GetAll())
             {
-                var moneytag = new RueI.API.Elements.BasicElement(0.5f, $"      <color=#55ff55><align=left>${p.GetMoney()}</align></color>");
+                string tag = $"         <align=left><color={p.GetJobInfo().Colour}>{p.GetJobInfo().Name}</color>   <color=#55ff55>${p.GetMoney()}</color></align>";
+                var moneytag = new RueI.API.Elements.BasicElement(14f, tag);
+
+              //  var bgtag = new RueI.API.Elements.BasicElement(35f,"<align=left><color #44444420><size=50>■</size></color></align>");
                 RueI.API.RueDisplay.Get(p).Show(moneytag, 0.7f);
+               //RueI.API.RueDisplay.Get(p).Show(bgtag, 0.7f);
             }
         }
 

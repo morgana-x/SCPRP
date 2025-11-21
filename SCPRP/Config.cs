@@ -12,8 +12,7 @@ namespace SCPRP
         public MoneyConfig MoneyConfig { get; set; } = new MoneyConfig();
         public DoorsConfig DoorsConfig { get; set; } = new DoorsConfig();
 
-        public ShopConfig ShopConfig { get; set; } = new ShopConfig();
-
         public JobConfig JobConfig { get; set; } = new JobConfig();
+        public ShopConfig ShopConfig { get; set; } = new ShopConfig();
     }
 }

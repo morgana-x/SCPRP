@@ -24,7 +24,10 @@ namespace SCPRP.Modules.Entities
     {
         public LabApi.Features.Wrappers.Door Door;
         public int Price;
-        public string Name = "";
+
+
+        string _name = "";
+        public string Name { get { return _name; } set { _name = value; UpdateText(); } }
 
         public TextToy[] TextScreens;
 
@@ -46,9 +49,12 @@ namespace SCPRP.Modules.Entities
         }
 
         public bool Owned => Teams.Count > 0 || Owner != null;
-        private void UpdateText()
+        public void UpdateText()
         {
-            string text = $"{Name}<br>";
+            string name = Name;
+            if (name.Trim().Replace(" ","") != "")
+                name = $"[{name}<color=white>]";
+            string text = $"{name}<br>";
 
            
             if (!Owned)
@@ -58,9 +64,9 @@ namespace SCPRP.Modules.Entities
                 text += $"{t}</align><br>";
 
             if (Owner != null) 
-                text += $"<color {Owner.RoleBase.RoleColor.ToHex()}>{Owner.DisplayName}</color><br>";
+                text += $"{Owner.GetColouredName()}<br>";
             foreach (var coowner in Coowners)
-                text += $"<color {coowner.RoleBase.RoleColor.ToHex()}>{coowner.DisplayName}</color><br>";
+                text += $"{coowner.GetColouredName()}<br>";
 
             foreach (var t in TextScreens)
             {
@@ -74,6 +80,7 @@ namespace SCPRP.Modules.Entities
         {
             Owner = p;
             Coowners.Clear();
+            _name = "";
             if (Owner == null && Door.IsLocked) { Door.Lock(DoorLockReason.AdminCommand, false); }
             UpdateText();
         }
@@ -160,6 +167,10 @@ namespace SCPRP.Modules.Entities
         {
             return Singleton.Doors.Values.Where((x) => { return x.Owner == p; }).ToList();
         }
+        public static List<RPDoor> GetCoOwnedDoors(Player p)
+        {
+            return Singleton.Doors.Values.Where((x) => { return x.Coowners.Contains(p); }).ToList();
+        }
 
         public static void SellAll(Player p)
         {
@@ -174,6 +185,7 @@ namespace SCPRP.Modules.Entities
             LabApi.Events.Handlers.ServerEvents.WaitingForPlayers += MapGenerated;
             LabApi.Events.Handlers.PlayerEvents.Left += PlayerLeft;
             LabApi.Events.Handlers.ServerEvents.DoorDamaged += DoorDamaged;
+            Events.Handlers.PlayerEvents.JobChanged += JobChanged;
             ServerSpecificSettingsSync.ServerOnSettingValueReceived += KeyPressedBuyDoor;
         }
         public override void Unload()
@@ -181,6 +193,7 @@ namespace SCPRP.Modules.Entities
             LabApi.Events.Handlers.ServerEvents.WaitingForPlayers -= MapGenerated;
             LabApi.Events.Handlers.PlayerEvents.Left -= PlayerLeft;
             LabApi.Events.Handlers.ServerEvents.DoorDamaged -= DoorDamaged;
+            Events.Handlers.PlayerEvents.JobChanged -= JobChanged;
             ServerSpecificSettingsSync.ServerOnSettingValueReceived -= KeyPressedBuyDoor;
             Doors.Clear();
         }
@@ -189,6 +202,8 @@ namespace SCPRP.Modules.Entities
         {
             foreach (var d in GetOwnedDoors(e.Player))
                 d.SetOwner(null);
+            foreach (var d in GetCoOwnedDoors(e.Player))
+                d.RemoveCoOwner(e.Player);
         }
 
         void DoorDamaged(DoorDamagedEventArgs e)
@@ -244,6 +259,13 @@ namespace SCPRP.Modules.Entities
             }
         }
 
+        void JobChanged(object sender, Events.Arguments.Player.JobChangedEventArgs e)
+        {
+            foreach (var d in GetOwnedDoors(e.Player))
+                d.UpdateText();
+            foreach (var d in GetCoOwnedDoors(e.Player))
+                d.UpdateText();
+        }
 
 
 

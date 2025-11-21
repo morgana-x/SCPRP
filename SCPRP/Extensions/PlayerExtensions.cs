@@ -1,8 +1,8 @@
 ﻿using LabApi.Features.Wrappers;
 using SCPRP.Modules.DB;
 using SCPRP.Modules.Players;
-using System.Linq;
 using UnityEngine;
+
 namespace SCPRP.Extensions
 {
     public static class PlayerExtensions
@@ -25,6 +25,27 @@ namespace SCPRP.Extensions
         public static void Notify(this Player player, string text)
         {
             HUD.ShowHint(player, text);
+        }
+
+        public static void SetJob(this Player player, string job)
+        {
+            Job.SetJob(player, job);
+        }
+        public static string GetJob(this Player player)
+        {
+            return Job.GetJob(player);
+        }
+
+        public static JobDefinition GetJobInfo(this Player player)
+        {
+            return Job.GetJobInfo(player);
+        }
+
+        public static string GetColouredName(this Player player)
+        {
+            var job = Job.GetJobInfo(player);
+            if (job == null) return $"<color #555555>{player.DisplayName}</color>";
+            return $"<color {job.Colour}>{player.DisplayName}</color>";
         }
 
         public static Door GetLookingDoor (this Player pl)

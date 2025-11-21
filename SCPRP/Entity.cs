@@ -115,7 +115,8 @@ namespace SCPRP
         }
         public static BaseEntity GetEntity(GameObject obj)
         {
-            var result = Singleton.Entities.Where((x) => { return (x.CoreObject!=null && x.CoreObject == obj) ||  (x.Interactable != null && x.Interactable.GameObject == obj) || (x.InteractablePickup != null && x.InteractablePickup.Base.gameObject == obj); }).ToList();
+            if (obj == null) return null;
+            var result = Singleton.Entities.Where((x) => { return (x.CoreObject!=null && x.CoreObject == obj) ||  (x.Interactable != null && x.Interactable.GameObject == obj) || (x.InteractablePickup != null && x.InteractablePickup.Base != null && x.InteractablePickup.Base.gameObject == obj); }).ToList();
             return result.Count > 0 ? result.First() : null;
         }
         private void ShotWeapon(PlayerPlacedBulletHoleEventArgs e)
@@ -133,7 +134,7 @@ namespace SCPRP
             {
                 if (e.Pickup != ent.InteractablePickup) continue;
                 e.IsAllowed = false;
-                e.Pickup.Spawn();
+                ent.InteractablePickup.IsInUse = false;
                 try
                 {
                     ent.OnInteract(e.Player);
