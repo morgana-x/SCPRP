@@ -45,7 +45,7 @@ namespace SCPRP.Extensions
         {
             var job = Job.GetJobInfo(player);
             if (job == null) return $"<color #555555>{player.DisplayName}</color>";
-            return $"<color {job.Colour}>{player.DisplayName}</color>";
+            return $"<color={job.HexColour()}>{player.DisplayName}</color>";
         }
 
         public static Door GetLookingDoor (this Player pl)

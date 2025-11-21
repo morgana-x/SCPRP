@@ -17,7 +17,7 @@ namespace SCPRP.Modules.Players
             nextHUD = DateTime.Now.AddSeconds(0.5f);
             foreach (var p in LabApi.Features.Wrappers.Player.GetAll())
             {
-                string tag = $"         <align=left><color={p.GetJobInfo().Colour}>{p.GetJobInfo().Name}</color>   <color=#55ff55>${p.GetMoney()}</color></align>";
+                string tag = $"         <align=left><color={p.GetJobInfo().HexColour()}>{p.GetJobInfo().Name}</color>   <color=#55ff55>${p.GetMoney()}</color></align>";
                 var moneytag = new RueI.API.Elements.BasicElement(14f, tag);
 
               //  var bgtag = new RueI.API.Elements.BasicElement(35f,"<align=left><color #44444420><size=50>■</size></color></align>");
@@ -28,7 +28,7 @@ namespace SCPRP.Modules.Players
 
         public static void ShowHint(LabApi.Features.Wrappers.Player pl, string text, float duration = 5f)
         {
-            var moneytag = new RueI.API.Elements.BasicElement(5f,text);
+            var moneytag = new RueI.API.Elements.BasicElement(100f,text);
             RueI.API.RueDisplay.Get(pl).Show(moneytag, duration);
         }
 

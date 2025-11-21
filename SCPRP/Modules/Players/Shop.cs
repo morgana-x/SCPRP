@@ -85,10 +85,18 @@ namespace SCPRP.Modules.Players
 
             new ShipItem(ItemType.GunE11SR, 5000, new List<string>(){"gundealer" } ,shipamount : 1 ),
             new ShipItem(ItemType.GunFRMG0, 2000, new List<string>(){"gundealer" } ,shipamount : 1 ),
+            new ShipItem(ItemType.GunFSP9, 1500, new List<string>(){"gundealer" } ,shipamount : 1 ),
 
             new ShipItem(ItemType.ArmorLight, 4000, new List<string>(){"gundealer" }, shipamount:1  ),
             new ShipItem(ItemType.ArmorCombat, 6000, new List<string>(){"gundealer" }, shipamount:1  ),
             new ShipItem(ItemType.ArmorHeavy, 8000, new List<string>(){"gundealer" }, shipamount:1  ),
+
+
+            new ShipItem(ItemType.KeycardJanitor, 100, new List<string>(){"keycard" }, shipamount:1  ),
+            new ShipItem(ItemType.KeycardScientist, 10000, new List<string>(){"keycard" }, shipamount:1  ),
+            new ShipItem(ItemType.KeycardResearchCoordinator, 15000, new List<string>(){"keycard" }, shipamount:1  ),
+            new ShipItem(ItemType.KeycardMTFOperative, 40000, new List<string>(){"keycard" }, shipamount:1  ),
+            new ShipItem(ItemType.KeycardO5, 80000, new List<string>(){"keycard" }, shipamount:1  ),
         };
 
     }

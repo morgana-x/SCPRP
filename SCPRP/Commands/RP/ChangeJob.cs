@@ -37,12 +37,12 @@ namespace SCPRP.Commands.RP
 
             if (p.GetJob() == job)
             {
-                response = $"You are already a {Job.GetJobInfo(job).Name}!";
+                response = $"You are already a {Job.GetColouredJobName(job)}!";
                 return false;
             }
 
             p.SetJob(job);
-            response = $"Changed to job {Job.GetJobInfo(job).Name}!";
+            response = $"Changed to job {Job.GetColouredJobName(job)}!";
             return true;
         }
     }

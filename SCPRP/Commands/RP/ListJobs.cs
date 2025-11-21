@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Linq;
 using CommandSystem;
-using LabApi.Features.Wrappers;
-using SCPRP.Extensions;
-using SCPRP.Modules.Entities;
 using SCPRP.Modules.Players;
 
 namespace SCPRP.Commands.RP
@@ -25,8 +21,10 @@ namespace SCPRP.Commands.RP
             foreach(var pair in SCPRP.Singleton.Config.JobConfig.Jobs)
             {
                 var maxsymbol = pair.Value.MaxPlayers != 0 ? pair.Value.MaxPlayers.ToString() : "∞";
-                response += $"{pair.Key} = <color={pair.Value.Colour}>{pair.Value.Name}</color> ({Job.GetJobPlayers(pair.Key).Count}/{maxsymbol})\n";
+                response += $"{pair.Key} = <color={pair.Value.HexColour()}>{pair.Value.Name}</color> ({Job.GetJobPlayers(pair.Key).Count}/{maxsymbol})<color=#555555> - {pair.Value.Description}</color>\n";
+                //response += $"          - {pair.Value.Description}\n";
             }
+            response += "Do <color=yellow>.job jobid</color> to become a job!\n";
             return true;
         }
     }

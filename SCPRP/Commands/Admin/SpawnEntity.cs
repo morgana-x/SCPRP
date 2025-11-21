@@ -2,9 +2,8 @@
 using System.Linq;
 using CommandSystem;
 using LabApi.Features.Wrappers;
-using UnityEngine;
 
-namespace SCPRP.Commands.RP
+namespace SCPRP.Commands.Admin
 {
     [CommandHandler(typeof(RemoteAdminCommandHandler))]
     public class SpawnEntity : ParentCommand, ICommand

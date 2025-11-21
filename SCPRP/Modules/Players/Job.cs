@@ -1,7 +1,6 @@
 ﻿using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Handlers;
 using LabApi.Features.Wrappers;
-using MonoMod.Utils;
 using PlayerRoles;
 using System;
 using System.Collections.Generic;
@@ -9,6 +8,7 @@ using UnityEngine;
 using Exiled.API.Extensions;
 using LabApi.Features.Extensions;
 using SCPRP.Extensions;
+using System.Linq;
 
 namespace SCPRP.Modules.Players
 {
@@ -27,8 +27,29 @@ namespace SCPRP.Modules.Players
         public int MaxPlayers { get; set; } = 0;
         public string Team { get; set; } = "";
 
+        public bool ForceUseSpawnpoint { get; set; } = false;
+
 
         public Dictionary<ItemType, ushort> Loadout { get; set; } = new Dictionary<ItemType, ushort>();
+
+        public string HexColour()
+        {
+            switch (Colour)
+            {
+                case "silver":
+                    return "#c4c4c4";
+                case "aqua":
+                    return "#16e6f3";
+                case "crimson":
+                    return "#f3163e";
+                case "light_green":
+                    return "#71f316";
+                case "magenta":
+                    return "#ff00ff";
+                default:
+                    return Colour;
+            }
+        }
     }
 
     public class TeamDefinition
@@ -59,7 +80,12 @@ namespace SCPRP.Modules.Players
             ["dclass"] = new TeamDefinition()
             { 
                 Name = "D-Class",
-                Colour = "#ff4422"
+                Colour = "#ff891d"
+            },
+            ["criminals"] = new TeamDefinition()
+            {
+                Name = "Criminals",
+                Colour = "#ff2222"
             }
 
 
@@ -80,10 +106,23 @@ namespace SCPRP.Modules.Players
 
                 Team = "dclass"
             },
+            ["thief"] = new JobDefinition()
+            {
+                Name = "Thief",
+                Description = "Pillage and Plunder!! (The printers and weapons!)",
+                Colour = "magenta",
+
+                Model = RoleTypeId.ClassD,
+                Spawnpoint = RoleTypeId.ClassD,
+
+                Payday = 150,
+
+                Team = "criminals"
+            },
             ["gundealer"] = new JobDefinition()
             {
                 Name = "Gun Smuggler",
-                Description = "Does silly Gun things",
+                Description = "Sells smuggled weapons",
                 Colour = "yellow",
 
                 Model = RoleTypeId.Tutorial,
@@ -96,10 +135,26 @@ namespace SCPRP.Modules.Players
                 Team = "dclass"
             },
 
+            ["keycard"] = new JobDefinition()
+            {
+                Name = "Keycard Forger",
+                Description = "Forges fake cards",
+                Colour = "yellow",
+
+                Model = RoleTypeId.Tutorial,
+                Spawnpoint = RoleTypeId.ClassD,
+
+                Payday = 1,
+
+                MaxPlayers = 1,
+
+                Team = "criminals"
+            },
+
             ["medic"] = new JobDefinition()
             {
                 Name = "Medic",
-                Description = "Does silly medic things",
+                Description = "Sells medical supplies",
                 Colour = "silver",
 
                 Model = RoleTypeId.ClassD,
@@ -116,7 +171,7 @@ namespace SCPRP.Modules.Players
             ["scientist"] = new JobDefinition()
             {
                 Name = "Scientist",
-                Description = "Does silly scientist things",
+                Description = "A very bad scientist, both morally and literally.",
                 Colour = "yellow",
 
                 Model = RoleTypeId.Scientist,
@@ -133,7 +188,7 @@ namespace SCPRP.Modules.Players
             ["security"] = new JobDefinition()
             {
                 Name = "Security Guard",
-                Description = "Does silly security things",
+                Description = "Keeps law and order in the facility",
                 Colour = "aqua",
 
                 Model = RoleTypeId.FacilityGuard,
@@ -141,7 +196,7 @@ namespace SCPRP.Modules.Players
 
                 MaxPlayers = 5,
 
-                Loadout = new Dictionary<ItemType, ushort>(){ [ItemType.KeycardGuard] = 1, [ItemType.GunFSP9] = 1, [ItemType.ArmorLight] = 1, [ItemType.Ammo9x19] = 200},
+                Loadout = new Dictionary<ItemType, ushort>(){ [ItemType.KeycardGuard] = 1, [ItemType.GunFSP9] = 1, [ItemType.ArmorLight] = 1, [ItemType.Ammo9x19] = 70},
 
                 Payday = 250,
 
@@ -150,7 +205,7 @@ namespace SCPRP.Modules.Players
             ["overseer"] = new JobDefinition()
             {
                 Name = "Overseer",
-                Description = "Does silly overseer things",
+                Description = "Controls the facility (>:3), Guards must follow their orders",
                 Colour = "crimson",
 
                 Model = RoleTypeId.Scientist,
@@ -158,7 +213,7 @@ namespace SCPRP.Modules.Players
                 
                 Loadout = new Dictionary<ItemType, ushort>(){ [ItemType.KeycardO5] = 1 },
 
-                MaxPlayers = 2,
+                MaxPlayers = 1,
 
                 Payday = 500,
 
@@ -167,19 +222,21 @@ namespace SCPRP.Modules.Players
             ["rebel"] = new JobDefinition()
             {
                 Name = "Rebel",
-                Description = "Does silly rebel things",
+                Description = "Hates the evil facility and loves D-Class!",
                 Colour = "light_green",
 
                 Model = RoleTypeId.ChaosConscript,
                 Spawnpoint = RoleTypeId.ChaosConscript,
 
-                Loadout = new Dictionary<ItemType, ushort>() { [ItemType.KeycardChaosInsurgency] = 1, [ItemType.GunAK] =1, [ItemType.ArmorHeavy] = 1, [ItemType.GrenadeHE]=1, [ItemType.GunRevolver]=1, [ItemType.Ammo762x39]=200, [ItemType.Ammo44cal]=200 },
+                Loadout = new Dictionary<ItemType, ushort>() { [ItemType.KeycardChaosInsurgency] = 1, [ItemType.GunAK] =1, [ItemType.ArmorHeavy] = 1, [ItemType.GunRevolver]=1, [ItemType.Ammo762x39]=50, [ItemType.Ammo44cal]=10 },
 
                 MaxPlayers = 4,
 
                 Payday = 500,
 
-                Team = "rebel"
+                Team = "rebel",
+
+                ForceUseSpawnpoint = true
             }
 
 
@@ -205,6 +262,9 @@ namespace SCPRP.Modules.Players
             PlayerEvents.ChangedRole += Spawned;
             PlayerEvents.Left += Left;
             PlayerEvents.ReceivingLoadout += Loadout;
+            PlayerEvents.ThrowingItem += Throwing;
+            PlayerEvents.DroppingItem += Dropping;
+            PlayerEvents.DroppingAmmo += DroppingAmmo;
         }
 
         public override void Unload()
@@ -213,6 +273,9 @@ namespace SCPRP.Modules.Players
             PlayerEvents.ChangedRole -= Spawned;
             PlayerEvents.Left -= Left;
             PlayerEvents.ReceivingLoadout -= Loadout;
+            PlayerEvents.ThrowingItem -= Throwing;
+            PlayerEvents.DroppingItem -= Dropping;
+            PlayerEvents.DroppingAmmo -= DroppingAmmo;
         }
 
         void Joined(PlayerJoinedEventArgs e)
@@ -247,6 +310,46 @@ namespace SCPRP.Modules.Players
             
             SendSyncFakeJobBadges(e.Player);
 
+        }
+
+        bool shouldDrop(Player e, ItemType type)
+        {
+            var jobinfo = e.GetJobInfo();
+            if (jobinfo == null) return true;
+            var loadout = jobinfo.Loadout;
+            if (!loadout.ContainsKey(type)) return true;
+            var numInventoryItem = e.Inventory.UserInventory.Items.Where((x => { return x.Value.ItemTypeId == type; })).Count();
+            var numLoadoutItem = loadout.Where((x => { return x.Key == type; })).Count();
+            if (numInventoryItem > numLoadoutItem)
+                return true;
+            return false;
+        }
+        void Dropping(PlayerDroppingItemEventArgs e)
+        {
+            if (!shouldDrop(e.Player, e.Item.Type))
+            {
+                e.IsAllowed = false;
+                HUD.ShowHint(e.Player, "<color=red>Cannot drop loadout item!</color>");
+            }
+        }
+
+        void DroppingAmmo(PlayerDroppingAmmoEventArgs e)
+        {
+            var jobinfo = e.Player.GetJobInfo();
+            if (jobinfo == null) return;
+            var loadout = jobinfo.Loadout;
+            if (!loadout.ContainsKey(e.Type)) return;
+            e.IsAllowed = false;
+        }
+
+
+        void Throwing(PlayerThrowingItemEventArgs e)
+        {
+            if (!shouldDrop(e.Player, e.Pickup.Type))
+            {
+                e.IsAllowed = false;
+                HUD.ShowHint(e.Player, "<color=red>Cannot drop loadout item!</color>");
+            }
         }
 
         void Loadout(PlayerReceivingLoadoutEventArgs e)
@@ -287,8 +390,12 @@ namespace SCPRP.Modules.Players
 
             Singleton.PlayerRoles[player] = role;
 
-            if (SCPRP.Singleton.Config.JobConfig.UseJobSpawnpoint)
+            if (SCPRP.Singleton.Config.JobConfig.UseJobSpawnpoint || GetJobInfo(role).ForceUseSpawnpoint)
+            {
                 player.SetRole(GetJobInfo(role).Model, RoleChangeReason.RemoteAdmin, RoleSpawnFlags.UseSpawnpoint & RoleSpawnFlags.AssignInventory);
+                GetJobInfo(role).Spawnpoint.TryGetRandomSpawnPoint(out Vector3 spawn, out float hor);
+                player.Position = spawn;
+            }
             else
             {
                 var oldpos = player.Position;
@@ -318,6 +425,13 @@ namespace SCPRP.Modules.Players
         public static JobDefinition GetJobInfo(Player player)
         {
             return GetJobInfo(GetJob(player));
+        }
+
+        public static string GetColouredJobName(string job)
+        {
+            var def = GetJobInfo(job);
+            if (def == null) return job;
+            return $"<color={def.HexColour()}>{def.Name}</color>";
         }
 
         public static List<Player> GetJobPlayers(string job)
