@@ -1,4 +1,5 @@
 ﻿
+using InventorySystem;
 using LabApi.Features.Wrappers;
 using SCPRP.Entities;
 using SCPRP.Extensions;
@@ -145,15 +146,15 @@ namespace SCPRP.Modules.Players
 
             if (item.ShipmentAmount == 1)
             {
-                Pickup pickup;
                 if (System.Enum.GetName(typeof(ItemType), gameItem).StartsWith("Ammo"))
                 {
-                    pickup = AmmoPickup.Create(gameItem, p.Camera.position + p.Camera.forward * 0.5f);
-                    ((AmmoPickup)pickup).Ammo = 100;
+                    p.Inventory.ServerAddAmmo(gameItem, 50);
+                    // pickup = AmmoPickup.Create(gameItem, p.Camera.position + p.Camera.forward * 0.5f);
+                    //((AmmoPickup)pickup).Ammo = 100;
+                    return;
                 }
-                else
-                    pickup = Pickup.Create(gameItem, p.Camera.position + p.Camera.forward * 0.5f);
 
+                Pickup pickup = Pickup.Create(gameItem, p.Camera.position + p.Camera.forward * 0.5f);
                 pickup.Spawn();
                 return;
             }

@@ -27,10 +27,10 @@ namespace SCPRP.Commands.RP
             var p = Player.Get(sender);
             if (args.First() == "list")
             {
-                response = "\n====== Items ======\n";
+                response = "Do <color=red>.shop buy item</color> to purchase an item!\nAvailable Items:\n";
                 foreach (var i in Modules.Players.Shop.GetAvaiableItems(p))
-                    response += $"= {i.Entity} ${i.Price} ({ (i.IsShipment ? Entity.Singleton.GetEntities(p, "spawned_shipment").Count :  Entity.Singleton.GetEntities(p, i.Entity).Count)}/{ (i.IsShipment ? SCPRP.Singleton.Config.ShopConfig.MaxShipments : i.Max)})\n";
-                response += "==================";
+                    response += $"  - <color=yellow>{i.Entity}</color> = ${i.Price} ({ (i.IsShipment ? Entity.Singleton.GetEntities(p, "spawned_shipment").Count :  Entity.Singleton.GetEntities(p, i.Entity).Count)}/{ (i.IsShipment ? SCPRP.Singleton.Config.ShopConfig.MaxShipments : i.Max)})\n";
+                response += "Do <color=red>.shop buy item</color> to purchase an item!";
                 return true;
             }
 
@@ -44,7 +44,7 @@ namespace SCPRP.Commands.RP
             var item = Modules.Players.Shop.GetItem(itemid);
             if (item == null)
             {
-                response = $"Invalid entity to purchase!";
+                response = $"Invalid entity to purchase! (Items are Case Sensitive)";
                 return false;
             }
 

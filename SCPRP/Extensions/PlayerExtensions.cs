@@ -43,6 +43,7 @@ namespace SCPRP.Extensions
 
         public static string GetColouredName(this Player player)
         {
+            if (player == null) return $"<color #555555>DISCONNECTED</color>";
             var job = Job.GetJobInfo(player);
             if (job == null) return $"<color #555555>{player.DisplayName}</color>";
             return $"<color={job.HexColour()}>{player.DisplayName}</color>";

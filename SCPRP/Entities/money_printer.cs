@@ -83,7 +83,7 @@ namespace SCPRP.Entities
         {
             amountScreen.TextFormat = $"<color #55ff55>${_amount}</color><br>";
             if (Owner != null) 
-                amountScreen.TextFormat += $"<color {Owner.RoleBase.RoleColor.ToHex()}>{Owner.DisplayName}</color>";
+                amountScreen.TextFormat += Owner.GetColouredName();
         }
 
         public override void OnTick()
