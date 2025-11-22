@@ -106,13 +106,16 @@ namespace SCPRP.Modules.Players
                 Name = "D-Class",
                 Colour = "#ff891d"
             },
+            ["world"] = new TeamDefinition()
+            {
+                Name = "",
+                Colour = "#ffffff"
+            },
             ["criminals"] = new TeamDefinition()
             {
                 Name = "Criminals",
                 Colour = "#ff2222"
             }
-
-
         };
 
         public Dictionary<string, JobDefinition> Jobs { get; set; } = new Dictionary<string, JobDefinition>()
@@ -206,6 +209,21 @@ namespace SCPRP.Modules.Players
                 Payday = 150,
 
                 MaxPlayers = 2,
+
+                Team = "criminals"
+            },
+            ["drug"] = new JobDefinition()
+            {
+                Name = "Drug Dealer",
+                Description = "Mmmm drugs",
+                Colour = "red",
+
+                Model = RoleTypeId.Tutorial,
+                Spawnpoint = RoleTypeId.ClassD,
+                Loadout = new Dictionary<ItemType, ushort>() { },
+                Payday = 150,
+
+                MaxPlayers = 3,
 
                 Team = "criminals"
             },
@@ -308,6 +326,8 @@ namespace SCPRP.Modules.Players
     {
 
         public static Job Singleton;
+
+        public static JobConfig Config { get { return SCPRP.Singleton.Config.JobConfig; } }
 
         public Dictionary<Player, string> PlayerRoles = new Dictionary<Player, string>();
 
@@ -524,12 +544,24 @@ namespace SCPRP.Modules.Players
         {
             return SCPRP.Singleton.Config.JobConfig.Jobs.ContainsKey(job);
         }
+
+        public static bool IsValidTeam(string team)
+        {
+            return SCPRP.Singleton.Config.JobConfig.Teams.ContainsKey(team);
+        }
+        public static string GetColouredTeamName(string team)
+        {
+            if (!IsValidTeam(team)) return team;
+            return $"<color={Config.Teams[team].Colour}>{Config.Teams[team].Name}</color>";
+        }
+
         private static void SendFakeJobBadge(Player player, Player targetToTrick)
         {
-            return;
             if (!targetToTrick.IsReady)
                 return;
             if (player == null || player.ReferenceHub == null ||  player.ReferenceHub.serverRoles == null || (!player.IsDummy && player.ReferenceHub.serverRoles.HasGlobalBadge))
+                return;
+            if (player.ReferenceHub.serverRoles.Network_myText != "")
                 return;
 
             var jobinfo = GetJobInfo(player);
@@ -552,14 +584,12 @@ namespace SCPRP.Modules.Players
         }
         private static void SendFakeJobBadgeAll(Player player)
         {
-            return;
             foreach (var p in Player.GetAll())
                 SendFakeJobBadge(player, p);
         }
 
         private static void SendSyncFakeJobBadges(Player player)
         {
-            return;
             foreach (var p in Player.GetAll())
                 SendFakeJobBadge(p, player);
         }

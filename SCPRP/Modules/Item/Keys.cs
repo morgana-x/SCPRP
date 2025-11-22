@@ -62,7 +62,8 @@ namespace SCPRP.Modules.Item
                 {
                     e.IsAllowed = false;
                 }
-                rpdoor.Purchase(e.Player);
+                if (!rpdoor.Owned)
+                    rpdoor.Purchase(e.Player);
                 return;
             }
             e.IsAllowed = false;

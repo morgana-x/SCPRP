@@ -98,6 +98,13 @@ namespace SCPRP.Modules.Players
             new ShipItem(ItemType.KeycardResearchCoordinator, 15000, new List<string>(){"keycard" }, shipamount:1  ),
             new ShipItem(ItemType.KeycardMTFOperative, 40000, new List<string>(){"keycard" }, shipamount:1  ),
             new ShipItem(ItemType.KeycardO5, 80000, new List<string>(){"keycard" }, shipamount:1  ),
+
+
+            new ShipItem(ItemType.Adrenaline, 200, new List<string>(){ "drug"}, shipamount:1),
+            new ShipItem(ItemType.SCP330, 10000, new List<string>(){ "drug"}, shipamount:1),
+            new ShipItem(ItemType.AntiSCP207, 5000, new List<string>(){ "drug"}, shipamount:1),
+            new ShipItem(ItemType.SCP207, 5000, new List<string>(){ "drug"}, shipamount:1),
+            new ShipItem(ItemType.SCP1853, 5000, new List<string>(){ "drug"}, shipamount:1),
         };
 
     }

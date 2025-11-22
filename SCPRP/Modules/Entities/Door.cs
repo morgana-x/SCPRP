@@ -61,7 +61,7 @@ namespace SCPRP.Modules.Entities
                 text += $"Press F2 to purchase<br><color #55ff55>${Price}</color><br>";
 
             foreach (var t in Teams)
-                text += $"{t}</align><br>";
+                text += $"{Modules.Players.Job.GetColouredTeamName(t)}<br>";
 
             if (Owner != null) 
                 text += $"{Owner.GetColouredName()}<br>";
@@ -99,7 +99,9 @@ namespace SCPRP.Modules.Entities
         }
         public bool HasPermission(Player p )
         {
-            return Owner == p || Coowners.Contains(p);
+            var job = p.GetJobInfo();
+            string team = (job != null) ? job.Team : "";
+            return Owner == p || Coowners.Contains(p) || Teams.Contains(team) ;
         }
         public void AddTeam(string team)
         {
