@@ -36,6 +36,7 @@ namespace SCPRP
         public float Health = 0;
         public virtual float MaxHealth => 100;
 
+        public bool Paused = false;
         public BaseEntity()
         {
         }
@@ -106,6 +107,8 @@ namespace SCPRP
             {
                 foreach (var ent in Entities)
                 {
+                    if (ent.Paused) 
+                        continue;
                     try
                     {
                         ent.OnTick();

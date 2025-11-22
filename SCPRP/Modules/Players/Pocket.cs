@@ -48,6 +48,7 @@ namespace SCPRP.Modules.Players
 
             Singleton.PocketInventory[player].Add(entity);
             entity.CoreObject.transform.position = new UnityEngine.Vector3(-16.820f, 315.462f, -32.034f);
+            entity.Paused = true;
         }
         public static void Drop(Player player, int yoffset=0)
         {
@@ -57,6 +58,7 @@ namespace SCPRP.Modules.Players
             var ent = inv.Last();
             inv.Remove(ent);
             ent.CoreObject.transform.position = (player.IsAlive ? (player.Camera.position + (player.Camera.forward * 0.8f)) : (player.Position + (Vector3.up * 0.5f))) + ((Vector3.up * 0.85f) * yoffset);
+            ent.Paused = false;
         }
 
         public static void DropAll(Player player)
