@@ -41,6 +41,13 @@ namespace SCPRP.Commands.RP
                 return false;
             }
 
+            var jobinfo = Job.GetJobInfo(job);
+            if ( (jobinfo.MaxPlayers > 0) && (Job.GetJobPlayers(job).Count >= jobinfo.MaxPlayers))
+            {
+                response = $"Job is at maximum capacity! Wait for a player to change from the job!";
+                return false;
+            }
+
             p.SetJob(job);
             response = $"Changed to job {Job.GetColouredJobName(job)}!";
             return true;
