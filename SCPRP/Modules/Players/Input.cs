@@ -1,4 +1,8 @@
-﻿using UserSettings.ServerSpecific;
+﻿using LabApi.Events.Arguments.PlayerEvents;
+using LabApi.Events.Handlers;
+using System.Collections.Generic;
+using System.Linq;
+using UserSettings.ServerSpecific;
 
 namespace SCPRP.Modules.Players
 {
@@ -9,19 +13,30 @@ namespace SCPRP.Modules.Players
             BuyDoor = 875,
         }
 
+        void CreateSettings() // Perhaps some other plugins *cough* mer *cough* should consider this approach >:(
+        {
+            List<ServerSpecificSettingBase> Items = new List<ServerSpecificSettingBase>();
+
+            if (ServerSpecificSettingsSync.DefinedSettings != null)
+                Items = ServerSpecificSettingsSync.DefinedSettings.ToList();
+
+            Items.Add(new SSGroupHeader("Actions"));
+            Items.Add(new SSKeybindSetting((int)InputIds.BuyDoor, "Buy Door", UnityEngine.KeyCode.F2, allowSpectatorTrigger: false));
+
+            ServerSpecificSettingsSync.DefinedSettings = Items.ToArray();
+
+            ServerSpecificSettingsSync.SendOnJoinFilter = (x) => { return true; };
+            ServerSpecificSettingsSync.SendToAll();
+        }
+
         public override void Load()
         {
-            ServerSpecificSettingsSync.DefinedSettings = new ServerSpecificSettingBase[]
-            {
-                new SSGroupHeader("Actions"),
-                new SSKeybindSetting((int)InputIds.BuyDoor, "Buy Door", UnityEngine.KeyCode.F2, allowSpectatorTrigger:false)
-            };
-            ServerSpecificSettingsSync.SendOnJoinFilter = (x) => { return true; };
+            ServerEvents.WaitingForPlayers += CreateSettings;
         }
 
         public override void Unload()
         {
-            
+            ServerEvents.WaitingForPlayers -= CreateSettings;
         }
 
         public override void Tick()
