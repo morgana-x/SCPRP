@@ -5,7 +5,7 @@ using SCPRP.Modules.Players;
 namespace SCPRP.Commands.RP
 {
     [CommandHandler(typeof(ClientCommandHandler))]
-    public class ListJobs : ParentCommand, ICommand
+    public class JobList : ParentCommand, ICommand
     {
         public override string Command { get; } = "jobs";
         public override string Description { get; } = "Lists all jobs";

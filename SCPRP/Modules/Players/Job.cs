@@ -9,6 +9,8 @@ using Exiled.API.Extensions;
 using LabApi.Features.Extensions;
 using SCPRP.Extensions;
 using System.Linq;
+using System.Globalization;
+using Unity.Jobs;
 
 namespace SCPRP.Modules.Players
 {
@@ -31,11 +33,31 @@ namespace SCPRP.Modules.Players
 
 
         public Dictionary<ItemType, ushort> Loadout { get; set; } = new Dictionary<ItemType, ushort>();
-
+        static Vector3 HexToCol(string colour)
+        {
+            return new Vector3(byte.Parse(colour.Substring(1, 2), NumberStyles.AllowHexSpecifier), byte.Parse(colour.Substring(3, 2), NumberStyles.AllowHexSpecifier), byte.Parse(colour.Substring(5, 2), NumberStyles.AllowHexSpecifier));
+        }
+        static string NearestBadgeInfoColour(string hexcolour)
+        {
+            string nearestColour = Misc.AcceptedColours.First();
+            float nearestDistance = float.MaxValue;
+            for (int i = 0; i < Misc.AcceptedColours.Length; i++)
+            {
+                float dist = (HexToCol("#" + Misc.AcceptedColours[i]) - HexToCol(hexcolour)).magnitude;
+                if (dist >= nearestDistance) continue;
+                nearestDistance = dist;
+                nearestColour = Misc.AcceptedColours[i];
+            }
+            return "#" + nearestColour;
+        }
         public string HexColour()
         {
+            if (UnityEngine.ColorUtility.TryParseHtmlString(Colour, out Color col))
+                return NearestBadgeInfoColour(col.ToHex());
+
             switch (Colour)
             {
+                
                 case "silver":
                     return "#c4c4c4";
                 case "aqua":
@@ -62,6 +84,8 @@ namespace SCPRP.Modules.Players
     {
         public bool UseJobSpawnpoint { get; set; } = false;
         public string DefaultJob { get; set; } = "dclass";
+
+        public int PaydayIntervalSeconds { get; set; } = 600;
         public Dictionary<ItemType, ushort> BaseLoadout { get; set; } = new Dictionary<ItemType, ushort>();
 
 
@@ -106,19 +130,6 @@ namespace SCPRP.Modules.Players
 
                 Team = "dclass"
             },
-            ["thief"] = new JobDefinition()
-            {
-                Name = "Thief",
-                Description = "Pillage and Plunder!! (The printers and weapons!)",
-                Colour = "magenta",
-
-                Model = RoleTypeId.ClassD,
-                Spawnpoint = RoleTypeId.ClassD,
-
-                Payday = 150,
-
-                Team = "criminals"
-            },
             ["gundealer"] = new JobDefinition()
             {
                 Name = "Gun Smuggler",
@@ -155,7 +166,7 @@ namespace SCPRP.Modules.Players
             {
                 Name = "Medic",
                 Description = "Sells medical supplies",
-                Colour = "silver",
+                Colour = "aqua",
 
                 Model = RoleTypeId.ClassD,
                 Spawnpoint = RoleTypeId.ClassD,
@@ -167,6 +178,36 @@ namespace SCPRP.Modules.Players
 
 
                 Team = "dclass"
+            },
+            ["thief"] = new JobDefinition()
+            {
+                Name = "Thief",
+                Description = "Pillage and Plunder!! (The printers and weapons!)",
+                Colour = "magenta",
+
+                Model = RoleTypeId.ClassD,
+                Spawnpoint = RoleTypeId.ClassD,
+
+                Payday = 150,
+
+                MaxPlayers = 5,
+
+                Team = "criminals"
+            },
+            ["hitman"] = new JobDefinition()
+            {
+                Name = "Hitman",
+                Description = "Get that sweet blood money",
+                Colour = "red",
+
+                Model = RoleTypeId.Tutorial,
+                Spawnpoint = RoleTypeId.ClassD,
+                Loadout = new Dictionary<ItemType, ushort>() { [ItemType.KeycardScientist] = 1, [ItemType.GunCOM15] = 1, [ItemType.Ammo9x19]=20},
+                Payday = 150,
+
+                MaxPlayers = 2,
+
+                Team = "criminals"
             },
             ["scientist"] = new JobDefinition()
             {
@@ -189,7 +230,7 @@ namespace SCPRP.Modules.Players
             {
                 Name = "Security Guard",
                 Description = "Keeps law and order in the facility",
-                Colour = "aqua",
+                Colour = "silver",
 
                 Model = RoleTypeId.FacilityGuard,
                 Spawnpoint = RoleTypeId.Scientist,
@@ -197,6 +238,23 @@ namespace SCPRP.Modules.Players
                 MaxPlayers = 5,
 
                 Loadout = new Dictionary<ItemType, ushort>(){ [ItemType.KeycardGuard] = 1, [ItemType.GunFSP9] = 1, [ItemType.ArmorLight] = 1, [ItemType.Ammo9x19] = 70},
+
+                Payday = 250,
+
+                Team = "government"
+            },
+            ["bodyguard"] = new JobDefinition()
+            {
+                Name = "Mayor's Bodyguard",
+                Description = "Protects the mayor",
+                Colour = "silver",
+
+                Model = RoleTypeId.NtfSergeant,
+                Spawnpoint = RoleTypeId.Scientist,
+
+                MaxPlayers = 1,
+
+                Loadout = new Dictionary<ItemType, ushort>() { [ItemType.KeycardGuard] = 1, [ItemType.GunE11SR] = 1, [ItemType.ArmorHeavy] = 1, [ItemType.Ammo556x45] = 70 },
 
                 Payday = 250,
 
@@ -265,6 +323,8 @@ namespace SCPRP.Modules.Players
             PlayerEvents.ThrowingItem += Throwing;
             PlayerEvents.DroppingItem += Dropping;
             PlayerEvents.DroppingAmmo += DroppingAmmo;
+            PlayerEvents.ChangedBadgeVisibility += BadgeChanged;
+            PlayerEvents.GroupChanged += GroupChanged;
         }
 
         public override void Unload()
@@ -276,6 +336,8 @@ namespace SCPRP.Modules.Players
             PlayerEvents.ThrowingItem -= Throwing;
             PlayerEvents.DroppingItem -= Dropping;
             PlayerEvents.DroppingAmmo -= DroppingAmmo;
+            PlayerEvents.ChangedBadgeVisibility -= BadgeChanged;
+            PlayerEvents.GroupChanged -= GroupChanged;
         }
 
         void Joined(PlayerJoinedEventArgs e)
@@ -291,7 +353,7 @@ namespace SCPRP.Modules.Players
 
         void Spawned(PlayerChangedRoleEventArgs e)
         {
-            SendFakeJobBadge(e.Player, e.Player);
+      
             if (e.ChangeReason != RoleChangeReason.LateJoin && e.ChangeReason != RoleChangeReason.Died) return;  
 
             if (e.ChangeReason == RoleChangeReason.LateJoin)
@@ -309,7 +371,22 @@ namespace SCPRP.Modules.Players
                 e.Player.Position = pos;
             
             SendSyncFakeJobBadges(e.Player);
+            SendFakeJobBadgeAll(e.Player);
+            e.Player.InfoArea &= ~PlayerInfoArea.PowerStatus;
+            e.Player.InfoArea &= ~PlayerInfoArea.UnitName;
+            e.Player.InfoArea &= ~PlayerInfoArea.Role;
+            e.Player.InfoArea &= ~PlayerInfoArea.Badge;
+            e.Player.CustomInfo = GetColouredJobName(e.Player.GetJob());
+        }
 
+        void BadgeChanged(PlayerChangedBadgeVisibilityEventArgs e)
+        {
+            SendFakeJobBadgeAll(e.Player);
+        }
+
+        void GroupChanged(PlayerGroupChangedEventArgs e)
+        {
+            SendFakeJobBadgeAll(e.Player);
         }
 
         bool shouldDrop(Player e, ItemType type)
@@ -403,7 +480,7 @@ namespace SCPRP.Modules.Players
                 player.Position = oldpos;
             }
             SendFakeJobBadgeAll(player);
-
+            player.CustomInfo = GetColouredJobName(player.GetJob());
             Events.Handlers.PlayerEvents.JobChangedFire(new Events.Arguments.Player.JobChangedEventArgs(player, oldjob, role));
         }
 
@@ -449,6 +526,7 @@ namespace SCPRP.Modules.Players
         }
         private static void SendFakeJobBadge(Player player, Player targetToTrick)
         {
+            return;
             if (!targetToTrick.IsReady)
                 return;
             if (player == null || player.ReferenceHub == null ||  player.ReferenceHub.serverRoles == null || (!player.IsDummy && player.ReferenceHub.serverRoles.HasGlobalBadge))
@@ -474,21 +552,34 @@ namespace SCPRP.Modules.Players
         }
         private static void SendFakeJobBadgeAll(Player player)
         {
-            foreach(var p in Player.GetAll())
+            return;
+            foreach (var p in Player.GetAll())
                 SendFakeJobBadge(player, p);
         }
 
         private static void SendSyncFakeJobBadges(Player player)
         {
+            return;
             foreach (var p in Player.GetAll())
                 SendFakeJobBadge(p, player);
         }
 
-        
 
+        DateTime nextPayday = DateTime.Now;
         public override void Tick()
         {
-
+            if (DateTime.Now > nextPayday)
+            {
+                nextPayday = DateTime.Now.AddSeconds(SCPRP.Singleton.Config.JobConfig.PaydayIntervalSeconds);
+                foreach(var p in Player.GetAll())
+                {
+                    var job = p.GetJobInfo();
+                    if (job == null) continue;
+                    if (job.Payday == 0) continue;
+                    p.AddMoney(job.Payday);
+                    HUD.ShowHint(p, $"Payday! Received ${job.Payday}!");
+                }
+            }
         }
 
     }

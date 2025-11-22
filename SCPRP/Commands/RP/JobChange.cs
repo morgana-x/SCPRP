@@ -9,7 +9,7 @@ using SCPRP.Modules.Players;
 namespace SCPRP.Commands.RP
 {
     [CommandHandler(typeof(ClientCommandHandler))]
-    public class ChangeJob : ParentCommand, ICommand
+    public class JobChange : ParentCommand, ICommand
     {
         public override string Command { get; } = "job";
         public override string Description { get; } = "Changes job";
@@ -22,7 +22,7 @@ namespace SCPRP.Commands.RP
 
             if (args.Count < 1)
             {
-                response = "Missing argumenst! Correct Usage: job job";
+                response = "Missing arguments! Correct Usage: job <color=yellow>jobid</color>";
                 return false;
             }
 
