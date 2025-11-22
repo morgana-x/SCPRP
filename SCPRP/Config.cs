@@ -53,7 +53,7 @@ namespace SCPRP
 
     public class MapConfig
     {
-        public SpawnDefinition Spawnpoint { get; set; } = new SpawnDefinition();
+        public SpawnDefinition Spawnpoint { get; set; } = new SpawnDefinition(new UnityEngine.Vector3(0.358f, 300.960f, -8.196f));
     }
 
     public class Config

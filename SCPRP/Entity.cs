@@ -1,4 +1,5 @@
 ﻿using LabApi.Events.Arguments.PlayerEvents;
+using LabApi.Events.Arguments.Scp914Events;
 using LabApi.Events.Handlers;
 using LabApi.Features.Wrappers;
 using MEC;
@@ -83,14 +84,18 @@ namespace SCPRP
 
             moduleTickHandle = Timing.RunCoroutine(Tick());
             PlayerEvents.PickingUpItem += OnPicking;
+            PlayerEvents.SearchingPickup += OnSearching;
             PlayerEvents.InteractedToy += OnPickingToy;
             PlayerEvents.PlacedBulletHole += ShotWeapon;
+            Scp914Events.ProcessingPickup += ProcessingPickup;
         }
         public void Unload()
         {
             PlayerEvents.PickingUpItem -= OnPicking;
+            PlayerEvents.SearchingPickup -= OnSearching;
             PlayerEvents.InteractedToy -= OnPickingToy;
             PlayerEvents.PlacedBulletHole -= ShotWeapon;
+            Scp914Events.ProcessingPickup -= ProcessingPickup;
             Timing.KillCoroutines(moduleTickHandle);
             entities.Clear();
             EntityMap.Clear();
@@ -128,13 +133,25 @@ namespace SCPRP
             if (ent == null) return;
             ent.OnDamage(e.Player, 20);
         }
-        private void OnPicking(PlayerPickingUpItemEventArgs e)
+        private void ProcessingPickup(Scp914ProcessingPickupEventArgs e)
+        {
+            foreach(var ent in Entities)
+            {
+                if (ent.InteractablePickup == null) continue;
+                if (ent.InteractablePickup == e.Pickup)
+                {
+                    e.IsAllowed = false;
+                    break;
+                }
+            }
+        }
+
+        private void OnSearching(PlayerSearchingPickupEventArgs e)
         {
             foreach (var ent in Entities)
             {
                 if (e.Pickup != ent.InteractablePickup) continue;
                 e.IsAllowed = false;
-                ent.InteractablePickup.IsInUse = false;
                 try
                 {
                     ent.OnInteract(e.Player);
@@ -144,6 +161,16 @@ namespace SCPRP
                     Console.WriteLine(ex.ToString());
                 }
                 return;
+            }
+        }
+        private void OnPicking(PlayerPickingUpItemEventArgs e)
+        {
+            foreach (var ent in Entities)
+            {
+                if (e.Pickup != ent.InteractablePickup) continue;
+                e.IsAllowed = false;
+                ent.InteractablePickup.IsInUse = false;
+                break;
             }
         }
         private void OnPickingToy(PlayerInteractedToyEventArgs e)

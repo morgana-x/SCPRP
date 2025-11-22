@@ -18,24 +18,29 @@ namespace SCPRP.Modules.Item
             LabApi.Events.Handlers.PlayerEvents.InteractingDoor += InteractingDoor;
             LabApi.Events.Handlers.PlayerEvents.ReceivedLoadout += PlayerSpawned;
             LabApi.Events.Handlers.PlayerEvents.DroppingItem += PlayerDropping;
+            LabApi.Events.Handlers.PlayerEvents.InteractingLocker += InteractingLocker;
+            LabApi.Events.Handlers.PlayerEvents.InteractingGenerator += InteractingGenerator;
         }
         public override void Unload()
         {
             LabApi.Events.Handlers.PlayerEvents.InteractingDoor -= InteractingDoor;
             LabApi.Events.Handlers.PlayerEvents.ReceivedLoadout -= PlayerSpawned;
             LabApi.Events.Handlers.PlayerEvents.DroppingItem -= PlayerDropping;
+            LabApi.Events.Handlers.PlayerEvents.InteractingLocker -= InteractingLocker;
+            LabApi.Events.Handlers.PlayerEvents.InteractingGenerator -= InteractingGenerator;
         }
         public override void Tick()
         {
            
         }
 
+        public  static bool IsKeycard(LabApi.Features.Wrappers.Item item)
+        {
+            return item != null && item is LabApi.Features.Wrappers.KeycardItem && ((LabApi.Features.Wrappers.KeycardItem)item).Type == ItemType.KeycardCustomMetalCase;
+        }
         void PlayerDropping(PlayerDroppingItemEventArgs e)
         {
-            var item = e.Item;
-            bool holdingkeys = item != null && item is LabApi.Features.Wrappers.KeycardItem && ((LabApi.Features.Wrappers.KeycardItem)item).Type == ItemType.KeycardCustomMetalCase;
-
-            if (e.Player.CurrentItem == null || !holdingkeys)
+            if (e.Player.CurrentItem == null || !IsKeycard(e.Item))
                 return;
             e.IsAllowed = false;
         }
@@ -44,15 +49,25 @@ namespace SCPRP.Modules.Item
             if (e.Player.Role != PlayerRoles.RoleTypeId.Spectator && e.Player.Role != PlayerRoles.RoleTypeId.Filmmaker)
                 GiveKeys(e.Player);
         }
+
+        
+        void InteractingLocker(PlayerInteractingLockerEventArgs e)
+        {
+            if (IsKeycard(e.Player.CurrentItem) && !SCPRP.Singleton.Config.DoorsConfig.KeysCanActAsKeycard)
+                e.IsAllowed = false;
+        }
+        void InteractingGenerator(PlayerInteractingGeneratorEventArgs e)
+        {
+            if (IsKeycard(e.Player.CurrentItem) && !SCPRP.Singleton.Config.DoorsConfig.KeysCanActAsKeycard)
+                e.IsAllowed = false;
+        }
         void InteractingDoor(PlayerInteractingDoorEventArgs e)
         {
             var rpdoor = Entities.Door.GetRPDoor(e.Door);
             if (rpdoor == null) return;
 
-            var item = e.Player.CurrentItem;
-            bool holdingkeys = item != null && item is LabApi.Features.Wrappers.KeycardItem && ((LabApi.Features.Wrappers.KeycardItem)item).Type == ItemType.KeycardCustomMetalCase;
 
-            if (e.Player.CurrentItem == null || !holdingkeys)
+            if (e.Player.CurrentItem == null || !IsKeycard(e.Player.CurrentItem))
                 return;
 
 

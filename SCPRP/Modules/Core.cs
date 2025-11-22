@@ -13,6 +13,9 @@ namespace SCPRP.Modules
         {
             ServerEvents.WaitingForPlayers += WaitingForPlayers;
             ServerEvents.LczDecontaminationStarting += DecontaminationStarting;
+
+            PlayerEvents.InteractingWarheadLever += InteractingWarhead;
+
             PlayerEvents.Escaping += Escaping;
 
             PlayerEvents.Joined += Joined;
@@ -29,6 +32,7 @@ namespace SCPRP.Modules
             ServerEvents.LczDecontaminationStarting -= DecontaminationStarting;
             PlayerEvents.Escaping -= Escaping;
 
+            PlayerEvents.InteractingWarheadLever -= InteractingWarhead;
 
             PlayerEvents.Joined -= Joined;
         }
@@ -55,5 +59,12 @@ namespace SCPRP.Modules
         {
             e.IsAllowed = false;
         }
+
+        void InteractingWarhead(PlayerInteractingWarheadLeverEventArgs e)
+        {
+            e.IsAllowed = false;
+            e.Enabled = false;
+        }
+
     }
 }
