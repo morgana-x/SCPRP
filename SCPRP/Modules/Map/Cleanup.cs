@@ -18,7 +18,7 @@ namespace SCPRP.Modules.Map
 
         public override void Unload()
         {
-            PlayerEvents.SpawnedRagdoll += SpawnedRagdoll;
+            PlayerEvents.SpawnedRagdoll -= SpawnedRagdoll;
         }
         public override void Tick()
         {
