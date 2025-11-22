@@ -13,6 +13,7 @@ namespace SCPRP.Modules
         {
             ServerEvents.WaitingForPlayers += WaitingForPlayers;
             ServerEvents.LczDecontaminationStarting += DecontaminationStarting;
+            PlayerEvents.Escaping += Escaping;
 
             PlayerEvents.Joined += Joined;
         }
@@ -26,6 +27,7 @@ namespace SCPRP.Modules
         {
             ServerEvents.WaitingForPlayers -= WaitingForPlayers;
             ServerEvents.LczDecontaminationStarting -= DecontaminationStarting;
+            PlayerEvents.Escaping -= Escaping;
 
 
             PlayerEvents.Joined -= Joined;
@@ -47,6 +49,11 @@ namespace SCPRP.Modules
             Server.FriendlyFire = true;
             Round.Start();
             
+        }
+
+        void Escaping(PlayerEscapingEventArgs e)
+        {
+            e.IsAllowed = false;
         }
     }
 }

@@ -9,6 +9,12 @@ namespace SCPRP.Entities
 {
     public class money_printer : BaseEntity
     {
+        public class MoneyPrinterConfig
+        {
+            public int IncreaseAmount { get; set; } = 50;
+            public int Rate { get; set; } = 30;
+        }
+
         public override string Name => "Money Printer";
         public override float MaxHealth => 50;
 
@@ -16,7 +22,7 @@ namespace SCPRP.Entities
 
         private long _amount;
 
-        public long IncreaseRate = 100;
+        public long IncreaseAmount = 50;
         public int Rate = 30;
         public long Amount { get {  return _amount; } set { _amount = value; UpdateText(); } }
 
@@ -55,6 +61,10 @@ namespace SCPRP.Entities
 
 
             UpdateText();
+
+            IncreaseAmount = SCPRP.Singleton.Config.MoneyPrinterConfig.IncreaseAmount;
+            Rate = SCPRP.Singleton.Config.MoneyPrinterConfig.Rate;
+
             nextPrint = DateTime.Now.AddSeconds(Rate);
         }
 
@@ -89,7 +99,7 @@ namespace SCPRP.Entities
         public override void OnTick()
         {
             if (DateTime.Now < nextPrint) return;
-            Amount += IncreaseRate;
+            Amount += IncreaseAmount;
             nextPrint = DateTime.Now.AddSeconds(Rate);
         }
     }

@@ -23,7 +23,7 @@ namespace SCPRP.Modules.Players
 
         public RoleTypeId Model { get; set; } = RoleTypeId.ClassD;
 
-        public RoleTypeId Spawnpoint { get; set; }  = RoleTypeId.None;
+        public SpawnDefinition Spawnpoint { get; set; }  = new SpawnDefinition();
 
         public int Payday { get; set; } = 0;
         public int MaxPlayers { get; set; } = 0;
@@ -127,7 +127,6 @@ namespace SCPRP.Modules.Players
                 Colour = "orange",
 
                 Model = RoleTypeId.ClassD,
-                Spawnpoint = RoleTypeId.ClassD,
 
                 Payday = 150,
 
@@ -140,7 +139,6 @@ namespace SCPRP.Modules.Players
                 Colour = "yellow",
 
                 Model = RoleTypeId.Tutorial,
-                Spawnpoint = RoleTypeId.ClassD,
 
                 Payday = 200,
 
@@ -156,7 +154,6 @@ namespace SCPRP.Modules.Players
                 Colour = "yellow",
 
                 Model = RoleTypeId.Tutorial,
-                Spawnpoint = RoleTypeId.ClassD,
 
                 Payday = 1,
 
@@ -172,7 +169,6 @@ namespace SCPRP.Modules.Players
                 Colour = "aqua",
 
                 Model = RoleTypeId.ClassD,
-                Spawnpoint = RoleTypeId.ClassD,
 
                 Loadout = new Dictionary<ItemType, ushort>() { [ItemType.KeycardJanitor] = 1 },
                 Payday = 1,
@@ -189,7 +185,6 @@ namespace SCPRP.Modules.Players
                 Colour = "magenta",
 
                 Model = RoleTypeId.ClassD,
-                Spawnpoint = RoleTypeId.ClassD,
 
                 Payday = 150,
 
@@ -204,7 +199,7 @@ namespace SCPRP.Modules.Players
                 Colour = "red",
 
                 Model = RoleTypeId.Tutorial,
-                Spawnpoint = RoleTypeId.ClassD,
+
                 Loadout = new Dictionary<ItemType, ushort>() { [ItemType.KeycardScientist] = 1, [ItemType.GunCOM15] = 1, [ItemType.Ammo9x19]=20},
                 Payday = 150,
 
@@ -219,7 +214,7 @@ namespace SCPRP.Modules.Players
                 Colour = "red",
 
                 Model = RoleTypeId.Tutorial,
-                Spawnpoint = RoleTypeId.ClassD,
+
                 Loadout = new Dictionary<ItemType, ushort>() { },
                 Payday = 150,
 
@@ -234,7 +229,7 @@ namespace SCPRP.Modules.Players
                 Colour = "yellow",
 
                 Model = RoleTypeId.Scientist,
-                Spawnpoint = RoleTypeId.Scientist,
+                Spawnpoint = new SpawnDefinition(RoleTypeId.Scientist),
 
                 Loadout = new Dictionary<ItemType, ushort>(){ [ItemType.KeycardScientist] = 1 },
 
@@ -251,7 +246,6 @@ namespace SCPRP.Modules.Players
                 Colour = "silver",
 
                 Model = RoleTypeId.FacilityGuard,
-                Spawnpoint = RoleTypeId.Scientist,
 
                 MaxPlayers = 5,
 
@@ -268,7 +262,6 @@ namespace SCPRP.Modules.Players
                 Colour = "silver",
 
                 Model = RoleTypeId.NtfSergeant,
-                Spawnpoint = RoleTypeId.Scientist,
 
                 MaxPlayers = 1,
 
@@ -285,7 +278,6 @@ namespace SCPRP.Modules.Players
                 Colour = "crimson",
 
                 Model = RoleTypeId.Scientist,
-                Spawnpoint = RoleTypeId.Scientist,
                 
                 Loadout = new Dictionary<ItemType, ushort>(){ [ItemType.KeycardO5] = 1 },
 
@@ -302,7 +294,7 @@ namespace SCPRP.Modules.Players
                 Colour = "light_green",
 
                 Model = RoleTypeId.ChaosConscript,
-                Spawnpoint = RoleTypeId.ChaosConscript,
+                Spawnpoint = new SpawnDefinition(RoleTypeId.ChaosConscript),
 
                 Loadout = new Dictionary<ItemType, ushort>() { [ItemType.KeycardChaosInsurgency] = 1, [ItemType.GunAK] =1, [ItemType.ArmorHeavy] = 1, [ItemType.GunRevolver]=1, [ItemType.Ammo762x39]=50, [ItemType.Ammo44cal]=10 },
 
@@ -386,9 +378,12 @@ namespace SCPRP.Modules.Players
                 SetJob(e.Player, e.Player.GetJob());
        
             }
+            var spawn = SCPRP.Singleton.Config.MapConfig.Spawnpoint;
+            if (spawn.GetSpawnPosition() == UnityEngine.Vector3.zero)
+                spawn = new SpawnDefinition(RoleTypeId.ClassD);
 
-            if (RoleTypeId.ClassD.TryGetRandomSpawnPoint(out Vector3 pos, out float horizontal))
-                e.Player.Position = pos;
+           
+            e.Player.Position = spawn.GetSpawnPosition();
             
             SendSyncFakeJobBadges(e.Player);
             SendFakeJobBadgeAll(e.Player);
@@ -490,8 +485,12 @@ namespace SCPRP.Modules.Players
             if (SCPRP.Singleton.Config.JobConfig.UseJobSpawnpoint || GetJobInfo(role).ForceUseSpawnpoint)
             {
                 player.SetRole(GetJobInfo(role).Model, RoleChangeReason.RemoteAdmin, RoleSpawnFlags.UseSpawnpoint & RoleSpawnFlags.AssignInventory);
-                GetJobInfo(role).Spawnpoint.TryGetRandomSpawnPoint(out Vector3 spawn, out float hor);
-                player.Position = spawn;
+                
+                var spawnp = GetJobInfo(role).Spawnpoint;
+                if (spawnp.GetSpawnPosition() == Vector3.zero)
+                    spawnp = SCPRP.Singleton.Config.MapConfig.Spawnpoint;
+
+                player.Position = spawnp.GetSpawnPosition();
             }
             else
             {
