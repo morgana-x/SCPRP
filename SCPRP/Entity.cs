@@ -227,7 +227,7 @@ namespace SCPRP
         {
             return Entities.Where((x) =>
             {
-                return (x.Owner != null && (x.Owner == p || x.OwnerUserId == p.UserId)) && (id == "" || (x.GetType().Name == id));
+                return ((x.Owner != null && x.Owner == p) || (x.OwnerUserId == p.UserId)) && (id == "" || (x.GetType().Name == id));
             }
             ).ToList();
         }
