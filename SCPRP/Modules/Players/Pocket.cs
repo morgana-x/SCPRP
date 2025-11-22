@@ -56,14 +56,14 @@ namespace SCPRP.Modules.Players
             if (inv.Count <= 0) return;
             var ent = inv.Last();
             inv.Remove(ent);
-            ent.CoreObject.transform.position = (player.IsAlive ? (player.Camera.position + (player.Camera.forward * 0.25f)) : (player.Position + (Vector3.up * 0.5f))) + ((Vector3.up * 0.5f) * yoffset);
+            ent.CoreObject.transform.position = (player.IsAlive ? (player.Camera.position + (player.Camera.forward * 0.8f)) : (player.Position + (Vector3.up * 0.5f))) + ((Vector3.up * 0.85f) * yoffset);
         }
 
         public static void DropAll(Player player)
         {
             if (!Singleton.PocketInventory.ContainsKey(player)) return;
 
-            for (int i=0; i<Singleton.PocketInventory.Count; i++)
+            for (int i=0; i<GetInventory(player).Count; i++)
                 Drop(player, i);
         }
         void Left(PlayerLeftEventArgs e)
