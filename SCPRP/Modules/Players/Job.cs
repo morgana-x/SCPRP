@@ -337,6 +337,7 @@ namespace SCPRP.Modules.Players
             PlayerEvents.DroppingAmmo += DroppingAmmo;
             PlayerEvents.ChangedBadgeVisibility += BadgeChanged;
             PlayerEvents.GroupChanged += GroupChanged;
+            PlayerEvents.Dying += OnDeath;
         }
 
         public override void Unload()
@@ -350,6 +351,7 @@ namespace SCPRP.Modules.Players
             PlayerEvents.DroppingAmmo -= DroppingAmmo;
             PlayerEvents.ChangedBadgeVisibility -= BadgeChanged;
             PlayerEvents.GroupChanged -= GroupChanged;
+            PlayerEvents.Dying -= OnDeath;
         }
 
         void Joined(PlayerJoinedEventArgs e)
@@ -592,7 +594,17 @@ namespace SCPRP.Modules.Players
             foreach (var p in Player.GetAll())
                 SendFakeJobBadge(p, player);
         }
-
+        void OnDeath(PlayerDyingEventArgs e)
+        {
+            if (!e.IsAllowed) return;
+            var job = GetJobInfo(e.Player);
+            if (job == null) return;
+            foreach (var i in e.Player.Items.ToList())
+            {
+                if (job.Loadout.ContainsKey(i.Type))
+                    e.Player.RemoveItem(i);
+            }
+        }
 
         DateTime nextPayday = DateTime.Now;
         public override void Tick()

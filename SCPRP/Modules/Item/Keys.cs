@@ -1,7 +1,8 @@
 ﻿using Interactables.Interobjects.DoorUtils;
+using InventorySystem;
 using LabApi.Events.Arguments.PlayerEvents;
-using LabApi.Features.Console;
 using LabApi.Features.Wrappers;
+using System.Linq;
 
 
 namespace SCPRP.Modules.Item
@@ -20,6 +21,7 @@ namespace SCPRP.Modules.Item
             LabApi.Events.Handlers.PlayerEvents.DroppingItem += PlayerDropping;
             LabApi.Events.Handlers.PlayerEvents.InteractingLocker += InteractingLocker;
             LabApi.Events.Handlers.PlayerEvents.InteractingGenerator += InteractingGenerator;
+            LabApi.Events.Handlers.PlayerEvents.Dying += OnDeath;
         }
         public override void Unload()
         {
@@ -28,19 +30,20 @@ namespace SCPRP.Modules.Item
             LabApi.Events.Handlers.PlayerEvents.DroppingItem -= PlayerDropping;
             LabApi.Events.Handlers.PlayerEvents.InteractingLocker -= InteractingLocker;
             LabApi.Events.Handlers.PlayerEvents.InteractingGenerator -= InteractingGenerator;
+            LabApi.Events.Handlers.PlayerEvents.Dying -= OnDeath;
         }
         public override void Tick()
         {
            
         }
 
-        public  static bool IsKeycard(LabApi.Features.Wrappers.Item item)
+        public  static bool IsKey(LabApi.Features.Wrappers.Item item)
         {
             return item != null && item is LabApi.Features.Wrappers.KeycardItem && ((LabApi.Features.Wrappers.KeycardItem)item).Type == ItemType.KeycardCustomMetalCase;
         }
         void PlayerDropping(PlayerDroppingItemEventArgs e)
         {
-            if (e.Player.CurrentItem == null || !IsKeycard(e.Item))
+            if (e.Player.CurrentItem == null || !IsKey(e.Item))
                 return;
             e.IsAllowed = false;
         }
@@ -53,12 +56,12 @@ namespace SCPRP.Modules.Item
         
         void InteractingLocker(PlayerInteractingLockerEventArgs e)
         {
-            if (IsKeycard(e.Player.CurrentItem) && !SCPRP.Singleton.Config.DoorsConfig.KeysCanActAsKeycard)
+            if (IsKey(e.Player.CurrentItem) && !SCPRP.Singleton.Config.DoorsConfig.KeysCanActAsKeycard)
                 e.IsAllowed = false;
         }
         void InteractingGenerator(PlayerInteractingGeneratorEventArgs e)
         {
-            if (IsKeycard(e.Player.CurrentItem) && !SCPRP.Singleton.Config.DoorsConfig.KeysCanActAsKeycard)
+            if (IsKey(e.Player.CurrentItem) && !SCPRP.Singleton.Config.DoorsConfig.KeysCanActAsKeycard)
                 e.IsAllowed = false;
         }
         void InteractingDoor(PlayerInteractingDoorEventArgs e)
@@ -67,7 +70,7 @@ namespace SCPRP.Modules.Item
             if (rpdoor == null) return;
 
 
-            if (e.Player.CurrentItem == null || !IsKeycard(e.Player.CurrentItem))
+            if (e.Player.CurrentItem == null || !IsKey(e.Player.CurrentItem))
                 return;
 
 
@@ -83,6 +86,16 @@ namespace SCPRP.Modules.Item
             }
             e.IsAllowed = false;
             rpdoor.Door.Lock(DoorLockReason.AdminCommand, !rpdoor.Door.IsLocked);
+        }
+
+        void OnDeath(PlayerDyingEventArgs e)
+        {
+            if (!e.IsAllowed) return;
+            foreach(var i in e.Player.Items.ToList())
+            {
+                if (IsKey(i))
+                    e.Player.RemoveItem(i);
+            }
         }
    
     }
