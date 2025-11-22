@@ -52,25 +52,35 @@ namespace SCPRP.Modules.Players
         }
         public string HexColour()
         {
+            string colour = Colour;
             if (UnityEngine.ColorUtility.TryParseHtmlString(Colour, out Color col))
-                return NearestBadgeInfoColour(col.ToHex());
+                colour = col.ToHex(); //NearestBadgeInfoColour(col.ToHex());
 
-            switch (Colour)
+            if (!colour.StartsWith("#"))
             {
-                
-                case "silver":
-                    return "#c4c4c4";
-                case "aqua":
-                    return "#16e6f3";
-                case "crimson":
-                    return "#f3163e";
-                case "light_green":
-                    return "#71f316";
-                case "magenta":
-                    return "#ff00ff";
-                default:
-                    return Colour;
+                switch (Colour)
+                {
+
+                    case "silver":
+                        colour = "#c4c4c4";
+                        break;
+                    case "aqua":
+                        colour = "#16e6f3";
+                        break;
+                    case "crimson":
+                        colour = "#f3163e";
+                        break;
+                    case "light_green":
+                        colour = "#71f316";
+                        break;
+                    case "magenta":
+                        colour = "#ff00ff";
+                        break;
+                }
             }
+            if (colour.StartsWith("#"))
+                return NearestBadgeInfoColour(colour);
+            return Colour;
         }
     }
 
