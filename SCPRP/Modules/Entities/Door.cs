@@ -225,7 +225,7 @@ namespace SCPRP.Modules.Entities
         
         void KeyPressedBuyDoor(ReferenceHub hub, ServerSpecificSettingBase b)
         {
-            if (b.SettingId != (int)Input.InputIds.BuyDoor) return;
+            if (b.SettingId != (int)Input.InputIds.BuyDoor && b.Label != "Buy Door") return;
 
 
             SSKeybindSetting keybind = (SSKeybindSetting)b;
