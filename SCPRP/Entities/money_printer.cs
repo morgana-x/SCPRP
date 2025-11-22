@@ -13,6 +13,8 @@ namespace SCPRP.Entities
         {
             public int IncreaseAmount { get; set; } = 50;
             public int Rate { get; set; } = 30;
+
+            public int MoneyLimit { get; set; } = 20000;
         }
 
         public override string Name => "Money Printer";
@@ -99,7 +101,12 @@ namespace SCPRP.Entities
         public override void OnTick()
         {
             if (DateTime.Now < nextPrint) return;
+            if (Amount >= SCPRP.Singleton.Config.MoneyPrinterConfig.MoneyLimit) return;
+
             Amount += IncreaseAmount;
+            if (Amount >= SCPRP.Singleton.Config.MoneyPrinterConfig.MoneyLimit)
+                Amount = SCPRP.Singleton.Config.MoneyPrinterConfig.MoneyLimit;
+
             nextPrint = DateTime.Now.AddSeconds(Rate);
         }
     }

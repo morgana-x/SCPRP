@@ -259,7 +259,23 @@ namespace SCPRP.Modules.Players
 
                 MaxPlayers = 5,
 
-                Loadout = new Dictionary<ItemType, ushort>(){ [ItemType.KeycardGuard] = 1, [ItemType.GunFSP9] = 1, [ItemType.ArmorLight] = 1, [ItemType.Ammo9x19] = 70},
+                Loadout = new Dictionary<ItemType, ushort>(){ [ItemType.KeycardGuard] = 1, [ItemType.GunFSP9] = 1, [ItemType.ArmorLight] = 1, [ItemType.Ammo9x19] = 70, [ItemType.Radio]=1},
+
+                Payday = 250,
+
+                Team = "government"
+            },
+            ["swat"] = new JobDefinition()
+            {
+                Name = "Armoured Security",
+                Description = "Uhhh security but better",
+                Colour = "silver",
+
+                Model = RoleTypeId.NtfSergeant,
+
+                MaxPlayers = 3,
+
+                Loadout = new Dictionary<ItemType, ushort>() { [ItemType.KeycardMTFOperative] = 1, [ItemType.GunE11SR] = 1, [ItemType.ArmorHeavy] = 1, [ItemType.Ammo556x45] = 70, [ItemType.Radio] = 1 },
 
                 Payday = 250,
 
@@ -267,15 +283,15 @@ namespace SCPRP.Modules.Players
             },
             ["bodyguard"] = new JobDefinition()
             {
-                Name = "Mayor's Bodyguard",
-                Description = "Protects the mayor",
+                Name = "Overseer's Bodyguard",
+                Description = "Protects the Overseer",
                 Colour = "silver",
 
                 Model = RoleTypeId.NtfSergeant,
 
                 MaxPlayers = 1,
 
-                Loadout = new Dictionary<ItemType, ushort>() { [ItemType.KeycardGuard] = 1, [ItemType.GunE11SR] = 1, [ItemType.ArmorHeavy] = 1, [ItemType.Ammo556x45] = 70 },
+                Loadout = new Dictionary<ItemType, ushort>() { [ItemType.KeycardMTFOperative] = 1, [ItemType.GunE11SR] = 1, [ItemType.ArmorHeavy] = 1, [ItemType.Ammo556x45] = 70, [ItemType.Radio] = 1 },
 
                 Payday = 250,
 
@@ -289,7 +305,7 @@ namespace SCPRP.Modules.Players
 
                 Model = RoleTypeId.Scientist,
                 
-                Loadout = new Dictionary<ItemType, ushort>(){ [ItemType.KeycardO5] = 1 },
+                Loadout = new Dictionary<ItemType, ushort>(){ [ItemType.KeycardO5] = 1, [ItemType.Radio] = 1 },
 
                 MaxPlayers = 1,
 

@@ -66,5 +66,20 @@ namespace SCPRP.Extensions
             }
             return null;
         }
+
+        public static BaseEntity GetLookingEntity(this Player pl)
+        {
+            Vector3 startPos = pl.Camera.position + (pl.Camera.forward * 0.16f);
+            for (int i = 0; i < 7; i++)
+            {
+                foreach (var v in Entity.Singleton.Entities)
+                {
+                    if (Vector3.Distance(v.CoreObject.transform.position, startPos) > 0.8f) continue;
+                    return v;
+                }
+                startPos += pl.Camera.forward;
+            }
+            return null;
+        }
     }
 }

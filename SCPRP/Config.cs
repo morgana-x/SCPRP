@@ -65,6 +65,8 @@ namespace SCPRP
         public MapConfig MapConfig { get; set; } = new MapConfig();
         public DoorsConfig DoorsConfig { get; set; } = new DoorsConfig();
 
+        public Pocket.PocketConfig PocketConfig { get; set; } = new Pocket.PocketConfig();
+
         public money_printer.MoneyPrinterConfig MoneyPrinterConfig { get; set; } = new money_printer.MoneyPrinterConfig();
 
         public JobConfig JobConfig { get; set; } = new JobConfig();
