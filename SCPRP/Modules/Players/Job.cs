@@ -6,11 +6,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Exiled.API.Extensions;
-using LabApi.Features.Extensions;
 using SCPRP.Extensions;
 using System.Linq;
 using System.Globalization;
-using Unity.Jobs;
 
 namespace SCPRP.Modules.Players
 {
@@ -156,7 +154,20 @@ namespace SCPRP.Modules.Players
 
                 Team = "dclass"
             },
+            ["bmd"] = new JobDefinition()
+            {
+                Name = "Blackmarket Smuggler",
+                Description = "Sells smuggled dangerous stuff",
+                Colour = "red",
 
+                Model = RoleTypeId.ChaosConscript,
+
+                Payday = 50,
+
+                MaxPlayers = 1,
+
+                Team = "criminals"
+            },
             ["keycard"] = new JobDefinition()
             {
                 Name = "Keycard Forger",
@@ -268,7 +279,7 @@ namespace SCPRP.Modules.Players
             ["swat"] = new JobDefinition()
             {
                 Name = "Armoured Security",
-                Description = "Uhhh security but better",
+                Description = "Security but better",
                 Colour = "silver",
 
                 Model = RoleTypeId.NtfSergeant,

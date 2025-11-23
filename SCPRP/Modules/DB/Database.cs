@@ -32,15 +32,28 @@ namespace SCPRP.Modules.DB
 
         public static DatabaseConfig Config { get { return SCPRP.Singleton.Config.DatabaseConfig;  } }
 
-        public override void Load()
+        static bool ConnectDB()
         {
             if (DB != null && DB.State != System.Data.ConnectionState.Closed) { DB.Close(); }
             DB = new MySql.Data.MySqlClient.MySqlConnection($"server={Config.ip};user={Config.user};database={Config.db};port={Config.port};password={Config.pw}");
             DB.Open();
 
-            var cmd = new MySqlCommand($@"CREATE TABLE IF NOT EXISTS `{Config.table}` (id VARCHAR(255) PRIMARY KEY, money BIGINT);", DB);
-            var affect = cmd.ExecuteNonQuery();
-            cmd.Dispose();
+            try
+            {
+                var cmd = new MySqlCommand($@"CREATE TABLE IF NOT EXISTS `{Config.table}` (id VARCHAR(255) PRIMARY KEY, money BIGINT);", DB);
+                var affect = cmd.ExecuteNonQuery();
+                cmd.Dispose();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+
+            return DB != null && DB.State == System.Data.ConnectionState.Open;
+        }
+        public override void Load()
+        {
+            ConnectDB();
         }
 
         public override void Tick()
@@ -51,30 +64,51 @@ namespace SCPRP.Modules.DB
         public static long GetMoney(string userid)
         {
             if (DB == null || DB.State != System.Data.ConnectionState.Open)
-                return 0;
-
-            var cmd = new MySqlCommand($@"SELECT money FROM {Config.table} WHERE id='{userid}';", DB);
-            var rd = cmd.ExecuteReader();
-
-            long value = 0;
-            if (rd.Read())
             {
-                value = rd.GetInt64(0);
+                if (!ConnectDB())
+                    return 0;
             }
-            else // If there's no entry for the player, set their money to the starting amount
+            try
             {
+                var cmd = new MySqlCommand($@"SELECT money FROM {Config.table} WHERE id='{userid}';", DB);
+                var rd = cmd.ExecuteReader();
+                long value = 0;
+                try
+                {
+                   
+                    if (rd.Read())
+                    {
+                        value = rd.GetInt64(0);
+                    }
+                    else // If there's no entry for the player, set their money to the starting amount
+                    {
+                        rd.Close();
+                        SetMoney(userid, SCPRP.Singleton.Config.MoneyConfig.StartingMoney);
+                        value = SCPRP.Singleton.Config.MoneyConfig.StartingMoney;
+                    }
+                  
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+   
                 rd.Close();
-                SetMoney(userid, SCPRP.Singleton.Config.MoneyConfig.StartingMoney);
-                value = SCPRP.Singleton.Config.MoneyConfig.StartingMoney;
+                cmd.Dispose();
+                return value;
             }
-            rd.Close();
-            cmd.Dispose();
-            return value;
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return 0;
+            }
         }
 
         public static void SetMoney(string userid, long amount)
         {
-            if (DB == null || DB.State != System.Data.ConnectionState.Open) { return; }
+            if (DB == null || DB.State != System.Data.ConnectionState.Open) {
+                return;
+            }
 
             var cmd = new MySqlCommand($@"REPLACE INTO {Config.table} (id, money) VALUES ('{userid}', {amount});", DB);
             cmd.ExecuteNonQuery();

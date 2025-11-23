@@ -1,9 +1,8 @@
-﻿using CommandSystem.Commands.RemoteAdmin.Doors;
-using Interactables.Interobjects.DoorUtils;
+﻿using Interactables.Interobjects.DoorUtils;
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Arguments.ServerEvents;
-using LabApi.Features.Console;
 using LabApi.Features.Wrappers;
+using MapGeneration;
 using SCPRP.Extensions;
 using SCPRP.Modules.Players;
 using System;
@@ -13,11 +12,51 @@ using UserSettings.ServerSpecific;
 
 namespace SCPRP.Modules.Entities
 {
+    public class DoorDefinition
+    {
+        public string Name { get; set; } = "";
+        public List<string> Teams {  get; set; } = new List<string>();
+
+        public DoorDefinition() { }
+        public DoorDefinition(string name, List<string> teams)
+        {
+            Name = name;
+            Teams = teams;
+        }
+
+        public DoorDefinition(string name)
+        {
+            Name = name;
+        }
+    }
 
     public class DoorsConfig
     {
         public bool KeysCanActAsKeycard { get; set; } = false;
         public int MaxDoors { get; set; } = 4;
+
+        public Dictionary<RoomName, DoorDefinition> DoorDefinitions = new Dictionary<RoomName, DoorDefinition>()
+        {
+            [RoomName.LczClassDSpawn] = new DoorDefinition("<color=#00e870>Spawn</color>", new List<string>() { "world"}),
+            [RoomName.LczCheckpointA] = new DoorDefinition("<color=#0659be>Checkpoint A</color>", new List<string>() { "government" }),
+            [RoomName.LczCheckpointB] = new DoorDefinition("<color=#0659be>Checkpoint B</color>", new List<string>() { "government" }),
+            [RoomName.LczAirlock] = new DoorDefinition("<color=#0659be>Airlock</color>", new List<string>() { "government" }),
+            [RoomName.LczGreenhouse] = new DoorDefinition("<color=#06be5f>Greenhouse</color>"),
+            [RoomName.LczGlassroom] = new DoorDefinition("<color=#00c0e8>Glass Room</color>"),
+            [RoomName.LczArmory] = new DoorDefinition("<color=#529ad5>Armoury</color>"),
+            [RoomName.Lcz914] = new DoorDefinition("<color=#fb2b45>SCP 914</color>"),
+            [RoomName.Lcz173] = new DoorDefinition("<color=#fb2b45>Containment Chamber</color>"),
+            [RoomName.LczToilets] = new DoorDefinition("<color=#00e860>Bathrooms</color>"),
+            [RoomName.Lcz330] = new DoorDefinition("<color=#fb2b45>SCP 330</color>"),
+            [RoomName.Hcz049] = new DoorDefinition("<color=#fb2b45>SCP 049</color>"),
+            [RoomName.HczArmory] = new DoorDefinition("<color=#529ad5>Armoury</color>"),
+            [RoomName.HczMicroHID] = new DoorDefinition("<color=#d552ce>Micro HID</color>"),
+            [RoomName.EzIntercom] = new DoorDefinition("<color=#52cfd5>Intercom</color>"),
+            [RoomName.EzOfficeSmall] = new DoorDefinition("<color=#529ad5>Small Office</color>"),
+            [RoomName.EzOfficeLarge] = new DoorDefinition("<color=#529ad5>Large Office</color>"),
+            [RoomName.EzOfficeStoried] = new DoorDefinition("<color=#529ad5>Office</color>"),
+        };
+
     }
 
     public class RPDoor
@@ -31,7 +70,9 @@ namespace SCPRP.Modules.Entities
 
         public TextToy[] TextScreens;
 
-        public List<string> Teams = new List<string>();
+        private List<string> _teams = new List<string>();
+        public List<string> Teams { get { return _teams; } set { _teams = value; UpdateText(); } }
+
         public Player Owner = null;
         public List<Player> Coowners = new List<Player>();
 
@@ -80,7 +121,7 @@ namespace SCPRP.Modules.Entities
         {
             Owner = p;
             Coowners.Clear();
-            _name = "";
+            _name = Modules.Entities.Door.GetDefaultDoorDefinition(this).Name;
             if (Owner == null && Door.IsLocked) { Door.Lock(DoorLockReason.AdminCommand, false); }
             UpdateText();
         }
@@ -243,10 +284,48 @@ namespace SCPRP.Modules.Entities
             rpdoor.Purchase(p);
 
         }
+
+        bool isValidRPDoor(LabApi.Features.Wrappers.Door x)
+        {
+            if ((x.Base is Interactables.Interobjects.ElevatorDoor) 
+                || (x.Base is Interactables.Interobjects.CheckpointDoor)
+               // || (x.Base is Interactables.Interobjects.PryableDoor)
+                || (x.Base is Interactables.Interobjects.BasicNonInteractableDoor) 
+             // ||  (!(x.Base is Interactables.Interobjects.BreakableDoor))
+                )
+                return false;
+
+            if (!x.CanInteract)
+                return false;
+
+            if (x.Rooms.Where((x) => ((x.Name != MapGeneration.RoomName.Unnamed))).Count() == 0)
+                return false;
+
+            return true;
+        }
+
+        public static DoorDefinition GetDefaultDoorDefinition(RPDoor door)
+        {
+            
+            foreach (var r in door.Door.Rooms)
+            {
+                if (!SCPRP.Singleton.Config.DoorsConfig.DoorDefinitions.ContainsKey(r.Name))
+                    continue;
+                return SCPRP.Singleton.Config.DoorsConfig.DoorDefinitions[r.Name];
+            }
+
+            return new DoorDefinition();
+        }
         void MapGenerated()
         {
-            foreach (var d in LabApi.Features.Wrappers.Door.List.Where((x) => { return !(x is ElevatorDoor) && !(x is CheckpointDoor) && x.CanInteract; }))
-                    Doors.Add(d, new RPDoor(d));
+            foreach (var d in LabApi.Features.Wrappers.Door.List.Where(isValidRPDoor))
+            {
+                var rpdoor = new RPDoor(d);
+                var def = GetDefaultDoorDefinition(rpdoor);
+                rpdoor.Name = def.Name;
+                rpdoor.Teams = def.Teams;
+                Doors.Add(d, rpdoor);
+            }
         }
 
         public override void Tick()

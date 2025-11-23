@@ -25,7 +25,17 @@ namespace SCPRP.Modules.Players
             nextHUD = DateTime.Now.AddSeconds(0.5f);
             foreach (var p in LabApi.Features.Wrappers.Player.GetAll())
             {
-               RueI.API.RueDisplay.Get(p).Show(MainTag, 0.6f);
+                if (p == null) continue;
+                if (!p.IsReady) continue;
+                if (p.IsDummy) continue;
+                try
+                {
+                    RueI.API.RueDisplay.Get(p).Show(MainTag, 0.6f);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.ToString());
+                }
             }
         }
 

@@ -70,34 +70,36 @@ namespace SCPRP.Modules.Players
             new ShipItem(ItemType.Ammo9x19, 1000, 1),
 
             new ShipItem(ItemType.Medkit, 6000, new List<string>(){"medic" }, shipamount:3  ),
-            new ShipItem(ItemType.Painkillers, 2000, new List<string>(){"medic" }, shipamount:4  ),
+            new ShipItem(ItemType.Painkillers, 2000, new List<string>(){"medic", "drug" }, shipamount:4  ),
 
-            new ShipItem(ItemType.GrenadeHE, 15000, new List<string>(){"gundealer" }, shipamount:3 ),
-            new ShipItem(ItemType.GrenadeFlash, 10000, new List<string>(){"gundealer" }, shipamount:3 ),
+            new ShipItem(ItemType.GrenadeHE, 4500, new List<string>(){"bmd" }, shipamount:2 ),
+            new ShipItem(ItemType.GrenadeFlash, 2000, new List<string>(){"gundealer", "bmd"}, shipamount:2 ),
 
-            new ShipItem(ItemType.GunAK, 4000, new List<string>(){"gundealer" } ,shipamount:1 ),
-            new ShipItem(ItemType.GunCrossvec, 3000, new List<string>(){"gundealer" } , shipamount:1 ),
+            new ShipItem(ItemType.GunAK, 4000, new List<string>(){"gundealer", "bmd" } ,shipamount:1 ),
+            new ShipItem(ItemType.GunCrossvec, 3000, new List<string>(){"gundealer", "bmd" } , shipamount:1 ),
+            new ShipItem(ItemType.GunLogicer, 120000, new List<string>(){"bmd" }  , shipamount : 5),
 
             new ShipItem(ItemType.GunCOM18, 1100, new List<string>(){"gundealer" }  , shipamount : 3),
             new ShipItem(ItemType.GunCOM15, 1000, new List<string>(){"gundealer" }  , shipamount : 3),
 
             new ShipItem(ItemType.GunShotgun, 3500, new List<string>(){"gundealer" } ,shipamount : 1 ),
-            new ShipItem(ItemType.GunRevolver, 1900, new List<string>(){"gundealer" } ,shipamount : 1 ),
+            new ShipItem(ItemType.GunRevolver, 1900, new List<string>(){"gundealer", "bmd" } ,shipamount : 1 ),
 
-            new ShipItem(ItemType.GunE11SR, 5000, new List<string>(){"gundealer" } ,shipamount : 1 ),
-            new ShipItem(ItemType.GunFRMG0, 2000, new List<string>(){"gundealer" } ,shipamount : 1 ),
+            new ShipItem(ItemType.GunE11SR, 4500, new List<string>(){"gundealer", "bmd" } ,shipamount : 1 ),
+            new ShipItem(ItemType.GunFRMG0, 7000, new List<string>(){"bmd" } ,shipamount : 1 ),
             new ShipItem(ItemType.GunFSP9, 1500, new List<string>(){"gundealer" } ,shipamount : 1 ),
 
             new ShipItem(ItemType.ArmorLight, 4000, new List<string>(){"gundealer" }, shipamount:1  ),
-            new ShipItem(ItemType.ArmorCombat, 6000, new List<string>(){"gundealer" }, shipamount:1  ),
-            new ShipItem(ItemType.ArmorHeavy, 8000, new List<string>(){"gundealer" }, shipamount:1  ),
+            new ShipItem(ItemType.ArmorCombat, 6000, new List<string>(){"gundealer", "bmd" }, shipamount:1  ),
+            new ShipItem(ItemType.ArmorHeavy, 8000, new List<string>(){"bmd" }, shipamount:1  ),
 
 
             new ShipItem(ItemType.KeycardJanitor, 100, new List<string>(){"keycard" }, shipamount:1  ),
-            new ShipItem(ItemType.KeycardScientist, 10000, new List<string>(){"keycard" }, shipamount:1  ),
-            new ShipItem(ItemType.KeycardResearchCoordinator, 15000, new List<string>(){"keycard" }, shipamount:1  ),
-            new ShipItem(ItemType.KeycardMTFOperative, 40000, new List<string>(){"keycard" }, shipamount:1  ),
-            new ShipItem(ItemType.KeycardO5, 80000, new List<string>(){"keycard" }, shipamount:1  ),
+            new ShipItem(ItemType.KeycardScientist, 1000, new List<string>(){"keycard" }, shipamount:1  ),
+            new ShipItem(ItemType.KeycardResearchCoordinator, 2000, new List<string>(){"keycard" }, shipamount:1  ),
+            new ShipItem(ItemType.KeycardGuard, 3000, new List<string>(){"keycard" }, shipamount:1  ),
+            new ShipItem(ItemType.KeycardMTFOperative, 15000, new List<string>(){"keycard" }, shipamount:1  ),
+            new ShipItem(ItemType.KeycardO5, 22000, new List<string>(){"keycard" }, shipamount:1  ),
 
 
             new ShipItem(ItemType.Adrenaline, 200, new List<string>(){ "drug"}, shipamount:1),
