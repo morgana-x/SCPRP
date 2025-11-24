@@ -21,7 +21,7 @@ namespace SCPRP.Commands.RP
 
             if (args.Count < 1)
             {
-                response = "Missing argumenst! Correct Usage: dropmoney amount";
+                response = "Missing arguments! Correct Usage: .dropmoney amount";
                 return false;
             }
 

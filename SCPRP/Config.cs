@@ -5,6 +5,7 @@ using SCPRP.Entities;
 using SCPRP.Modules.DB;
 using SCPRP.Modules.Entities;
 using SCPRP.Modules.Players;
+using SCPRP.Modules.Players.Jobs;
 using System.Linq;
 namespace SCPRP
 {

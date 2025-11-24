@@ -1,4 +1,5 @@
-﻿using Interactables.Interobjects.DoorUtils;
+﻿using CommandSystem.Commands.RemoteAdmin;
+using Interactables.Interobjects.DoorUtils;
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Arguments.ServerEvents;
 using LabApi.Features.Wrappers;
@@ -17,6 +18,7 @@ namespace SCPRP.Modules.Entities
         public string Name { get; set; } = "";
         public List<string> Teams {  get; set; } = new List<string>();
 
+        public bool Locked { get; set; } = false; 
         public DoorDefinition() { }
         public DoorDefinition(string name, List<string> teams)
         {
@@ -51,10 +53,14 @@ namespace SCPRP.Modules.Entities
             [RoomName.Hcz049] = new DoorDefinition("<color=#fb2b45>SCP 049</color>"),
             [RoomName.HczArmory] = new DoorDefinition("<color=#529ad5>Armoury</color>"),
             [RoomName.HczMicroHID] = new DoorDefinition("<color=#d552ce>Micro HID</color>"),
-            [RoomName.EzIntercom] = new DoorDefinition("<color=#52cfd5>Intercom</color>"),
+            [RoomName.EzIntercom] = new DoorDefinition("<color=#52cfd5>Intercom</color>", new List<string>() { "government" }),
             [RoomName.EzOfficeSmall] = new DoorDefinition("<color=#529ad5>Small Office</color>"),
             [RoomName.EzOfficeLarge] = new DoorDefinition("<color=#529ad5>Large Office</color>"),
             [RoomName.EzOfficeStoried] = new DoorDefinition("<color=#529ad5>Office</color>"),
+            [RoomName.Hcz939] = new DoorDefinition("<color=#fb2b45>SCP 330</color>", new List<string>() { "world"}),
+            [RoomName.Hcz079] = new DoorDefinition("<color=#fb2b45>SCP 079</color>"),
+            [RoomName.Hcz127] = new DoorDefinition("<color=#fb2b45>SCP 127</color>"),
+            [RoomName.HczTesla] = new DoorDefinition("", new List<string>() { "world" }),
         };
 
     }

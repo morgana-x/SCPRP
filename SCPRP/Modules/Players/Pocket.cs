@@ -38,15 +38,15 @@ namespace SCPRP.Modules.Players
         }
         public static void Pickup(Player player, BaseEntity entity)
         {
-            if (!Singleton.PocketInventory.ContainsKey(player))
-                Singleton.PocketInventory.Add(player, new List<BaseEntity>());
-
-            if (Singleton.PocketInventory[player].Contains(entity))
+            if (GetInventory(player).Contains(entity))
                 return;
             if (GetInventory(player).Count >= SCPRP.Singleton.Config.PocketConfig.MaxCapacity)
                 return;
 
+            if (!Singleton.PocketInventory.ContainsKey(player))
+                Singleton.PocketInventory.Add(player, new List<BaseEntity>());
             Singleton.PocketInventory[player].Add(entity);
+
             entity.CoreObject.transform.position = new UnityEngine.Vector3(-16.820f, 315.462f, -32.034f);
             entity.Paused = true;
         }

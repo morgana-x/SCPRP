@@ -9,6 +9,7 @@ using Exiled.API.Extensions;
 using SCPRP.Extensions;
 using System.Linq;
 using System.Globalization;
+using SCPRP.Modules.Players.Jobs;
 
 namespace SCPRP.Modules.Players
 {
@@ -29,6 +30,7 @@ namespace SCPRP.Modules.Players
 
         public bool ForceUseSpawnpoint { get; set; } = false;
 
+        public bool Hitman { get; set; } = false;
 
         public Dictionary<ItemType, ushort> Loadout { get; set; } = new Dictionary<ItemType, ushort>();
         static Vector3 HexToCol(string colour)
@@ -226,7 +228,9 @@ namespace SCPRP.Modules.Players
 
                 MaxPlayers = 2,
 
-                Team = "criminals"
+                Team = "criminals",
+
+                Hitman = true,
             },
             ["drug"] = new JobDefinition()
             {
@@ -347,6 +351,8 @@ namespace SCPRP.Modules.Players
 
         };
 
+        public Government.GovernmentConfig GovernmentConfig { get; set; } = new Government.GovernmentConfig();
+
     }
 
 
@@ -415,6 +421,7 @@ namespace SCPRP.Modules.Players
             if (e.ChangeReason == RoleChangeReason.Died && e.NewRole.RoleTypeId == RoleTypeId.Spectator)
             {
                 SetJob(e.Player, e.Player.GetJob());
+                e.Player.Health = e.Player.MaxHealth;
        
             }
             var spawn = SCPRP.Singleton.Config.MapConfig.Spawnpoint;
@@ -521,6 +528,8 @@ namespace SCPRP.Modules.Players
 
             Singleton.PlayerRoles[player] = role;
 
+            float oldhealth = player.IsAlive ? player.Health : player.MaxHealth;
+
             if (SCPRP.Singleton.Config.JobConfig.UseJobSpawnpoint || GetJobInfo(role).ForceUseSpawnpoint)
             {
                 player.SetRole(GetJobInfo(role).Model, RoleChangeReason.RemoteAdmin, RoleSpawnFlags.UseSpawnpoint & RoleSpawnFlags.AssignInventory);
@@ -537,6 +546,7 @@ namespace SCPRP.Modules.Players
                 player.SetRole(GetJobInfo(role).Model, RoleChangeReason.RemoteAdmin, RoleSpawnFlags.AssignInventory);
                 player.Position = oldpos;
             }
+            player.Health = oldhealth;
             SendFakeJobBadgeAll(player);
             player.CustomInfo = GetColouredJobName(player.GetJob());
             Events.Handlers.PlayerEvents.JobChangedFire(new Events.Arguments.Player.JobChangedEventArgs(player, oldjob, role));

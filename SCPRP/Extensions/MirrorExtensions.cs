@@ -19,7 +19,8 @@ namespace Exiled.API.Extensions
     using PlayerRoles;
 
     using LabApi.Features.Wrappers;
-    
+    using AdminToys;
+    using Utils.Networking;
 
     /// <summary>
     /// A set of extensions for <see cref="Mirror"/> Networking.
@@ -139,9 +140,14 @@ namespace Exiled.API.Extensions
         /// <param name="targetType"><see cref="NetworkBehaviour"/>'s type.</param>
         /// <param name="propertyName">Property name starting with Network.</param>
         /// <param name="value">Value of send to target.</param>
-        public static void SendFakeSyncVar(this Player target, NetworkIdentity behaviorOwner, Type targetType, string propertyName, object value)
+        /// 
+
+        private static string[] adminToyBaseSyncVarsValue;
+        public static string[] AdminToyBaseSyncVars => adminToyBaseSyncVarsValue ??= typeof(AdminToyBase).GetProperties().Where(property => property.Name.Contains("Network")).Select(property => property.Name).ToArray();
+
+        public static void SendFakeSyncVar<T>(this Player target, NetworkIdentity behaviorOwner, Type targetType, string propertyName, T value)
         {
-            if (!target.Connection.isAuthenticated)
+            if (!target.IsReady || behaviorOwner == null)
                 return;
 
             NetworkWriterPooled writer = NetworkWriterPool.Get();
@@ -157,11 +163,93 @@ namespace Exiled.API.Extensions
             NetworkWriterPool.Return(writer2);
             void CustomSyncVarGenerator(NetworkWriter targetWriter)
             {
+                bool isAdminToy = targetType.BaseType == typeof(AdminToyBase);
+                // all admin toys have toy-specific sync vars, so we need to write correct dirty bits for both the toys DeserializeSyncVars, but also AdminToyBase.DeserializeSyncVars in correct order
+                bool isBase = AdminToyBaseSyncVars.Contains(propertyName);
+
+                if (isAdminToy && !isBase)
+                {
+                    // no base sync var changes
+                    targetWriter.WriteULong(0);
+                }
+
                 targetWriter.WriteULong(SyncVarDirtyBits[$"{targetType.Name}.{propertyName}"]);
-                WriterExtensions[value.GetType()]?.Invoke(null, new object[2] { targetWriter, value });
+                WriterExtensions[typeof(T)]?.Invoke(null, new object[2] { targetWriter, value });
+
+                if (isAdminToy && isBase)
+                {
+                    // no sub-toy sync var changes
+                    targetWriter.WriteULong(0);
+                }
             }
         }
 
+        private static readonly Dictionary<Type, ulong> SubWriteClassToMinULong = new()
+        {
+            [typeof(AdminToyBase)] = 16,
+        };
+
+        // Easier syncVar
+        public static void SendFakeSyncVar<T>(this Player target, NetworkBehaviour networkBehaviour, ulong dirtyBit, T syncVar)
+        {
+            if (target.Connection == null)
+                return;
+
+            Type networkType = networkBehaviour.GetType();
+
+            NetworkWriterPooled writer = NetworkWriterPool.Get();
+            // always writing 1 because we only change 1 value!
+            Compression.CompressVarUInt(writer, 1);
+
+            // placeholder length
+            int headerPosition = writer.Position;
+            writer.WriteByte(0);
+            int contentPosition = writer.Position;
+
+            // Serialize Object Sync Data.
+            writer.WriteULong(0);
+
+            // Write DrityBit always
+            writer.WriteULong(dirtyBit);
+
+            bool IsWritten = false;
+
+            foreach (KeyValuePair<Type, ulong> kv in SubWriteClassToMinULong)
+            {
+                if (networkType.IsSubclassOf(kv.Key))
+                {
+                    if (kv.Value >= dirtyBit)
+                        writer.Write(syncVar);
+
+                    // Write always
+                    writer.WriteULong(dirtyBit);
+
+                    if (kv.Value <= dirtyBit)
+                        writer.Write(syncVar);
+
+                    IsWritten = true;
+                }
+            }
+
+            if (!IsWritten)
+                // we can just write normally
+                writer.Write(syncVar);
+
+            // end position safety write
+            int endPosition = writer.Position;
+            writer.Position = headerPosition;
+            int size = endPosition - contentPosition;
+            byte safety = (byte)(size & 0xFF);
+            writer.WriteByte(safety);
+            writer.Position = endPosition;
+
+
+            target.Connection.Send(new EntityStateMessage
+            {
+                netId = networkBehaviour.netId,
+                payload = writer.ToArraySegment(),
+            });
+        }
         /// <summary>
         /// Force resync to client's <see cref="SyncVarAttribute"/>.
         /// </summary>
