@@ -7,6 +7,7 @@ using CommandSystem;
 using LabApi.Features.Wrappers;
 using SCPRP.Extensions;
 using SCPRP.Modules.Entities;
+using SCPRP.Modules.Players.Jobs;
 
 
 namespace SCPRP.Commands.RP
@@ -42,6 +43,11 @@ namespace SCPRP.Commands.RP
             if (amount <= 0)
             {
                 response = $"Amount needs to be greater than zero!";
+                return false;
+            }
+            if (amount < Hitman.Singleton.Config.MinimumPrice)
+            {
+                response = $"Amount needs to be greater than ${Hitman.Singleton.Config.MinimumPrice}!";
                 return false;
             }
 

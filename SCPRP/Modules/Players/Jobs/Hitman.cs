@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Handlers;
 using LabApi.Features.Wrappers;
 using SCPRP.Extensions;
 namespace SCPRP.Modules.Players.Jobs
 {
-    public class Hitman : BaseModule
+    public class HitmanConfig
+    {
+        public int MinimumPrice { get; set; } = 2000;
+    }
+
+    public class Hitman : BaseModule<HitmanConfig>
     {
         public static Hitman Singleton;
 
