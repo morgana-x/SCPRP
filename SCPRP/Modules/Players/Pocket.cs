@@ -6,16 +6,16 @@ using LabApi.Features.Wrappers;
 using UnityEngine;
 namespace SCPRP.Modules.Players
 {
-    public class Pocket : BaseModule
+    public class PocketConfig
+    {
+        public int MaxCapacity { get; set; } = 3;
+    }
+    public class Pocket : BaseModule<PocketConfig>
     {
         public static Pocket Singleton;
 
         public Dictionary<Player, List<BaseEntity>> PocketInventory = new Dictionary<Player, List<BaseEntity>>();
 
-        public class PocketConfig 
-        {
-            public int MaxCapacity { get; set; } = 3;
-        }
         public override void Load()
         {
             Singleton = this;
@@ -40,7 +40,7 @@ namespace SCPRP.Modules.Players
         {
             if (GetInventory(player).Contains(entity))
                 return;
-            if (GetInventory(player).Count >= SCPRP.Singleton.Config.PocketConfig.MaxCapacity)
+            if (GetInventory(player).Count >= Singleton.Config.MaxCapacity)
                 return;
 
             if (!Singleton.PocketInventory.ContainsKey(player))

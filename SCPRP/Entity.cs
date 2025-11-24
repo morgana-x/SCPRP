@@ -2,10 +2,12 @@
 using LabApi.Events.Arguments.Scp914Events;
 using LabApi.Events.Handlers;
 using LabApi.Features.Wrappers;
+using LabApi.Loader;
 using MEC;
 using Mirror;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
@@ -58,6 +60,27 @@ namespace SCPRP
                 NetworkServer.Destroy(CoreObject);
         }
 
+        public virtual void LoadConfigs()
+        {
+
+        }
+
+    }
+    public abstract class BaseEntity<TConfig> : BaseEntity where TConfig : class, new()
+    {
+        public static TConfig? Config { get; set; }
+        public override void LoadConfigs()
+        {
+
+            string filepath = SCPRP.Singleton.GetConfigPath("Entities/" + this.GetType().Name + ".yml");
+
+            if (!Directory.Exists(Directory.GetParent(filepath).FullName))
+                Directory.CreateDirectory(Directory.GetParent(filepath).FullName);
+
+            LabApi.Features.Console.Logger.Info($"Loading {this.GetType().Name + ".yml"}...");
+            if (SCPRP.Singleton.TryLoadConfig<TConfig>(filepath, out TConfig? config))
+                Config = config;
+        }
     }
 
     public class Entity
@@ -194,6 +217,10 @@ namespace SCPRP
         }
         public void RegisterEntity(Type type)
         {
+            var inst = (BaseEntity)Activator.CreateInstance(type);
+            inst.LoadConfigs();
+            inst = null;
+
             EntityMap.Add(type.Name, type);
             LabApi.Features.Console.Logger.Info($"Registered entity {type.Name}!");
         }

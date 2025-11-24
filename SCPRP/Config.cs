@@ -64,9 +64,5 @@ namespace SCPRP
         public MoneyConfig MoneyConfig { get; set; } = new MoneyConfig();
 
         public MapConfig MapConfig { get; set; } = new MapConfig();
-
-        public Pocket.PocketConfig PocketConfig { get; set; } = new Pocket.PocketConfig();
-
-        public money_printer.MoneyPrinterConfig MoneyPrinterConfig { get; set; } = new money_printer.MoneyPrinterConfig();
     }
 }

@@ -3,6 +3,7 @@ using LabApi.Loader;
 using MEC;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using static Org.BouncyCastle.Math.EC.ECCurve;
@@ -25,7 +26,11 @@ namespace SCPRP
         public override void LoadConfigs()
         {
    
-            string filepath = SCPRP.Singleton.GetConfigPath(this.GetType().Name + ".yml");
+            string filepath = SCPRP.Singleton.GetConfigPath("Modules/"+ this.GetType().Name + ".yml");
+
+            if (!Directory.Exists(Directory.GetParent(filepath).FullName))
+                Directory.CreateDirectory(Directory.GetParent(filepath).FullName);
+
             Logger.Info($"Loading {this.GetType().Name + ".yml"}...");
             if (SCPRP.Singleton.TryLoadConfig<TConfig>(filepath, out TConfig? config))
                 Config = config;

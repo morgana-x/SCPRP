@@ -36,9 +36,9 @@ namespace SCPRP.Commands.RP
             switch (args.ElementAt(0))
             {
                 case "grab":
-                    if (Modules.Players.Pocket.GetInventory(p).Count >= SCPRP.Singleton.Config.PocketConfig.MaxCapacity)
+                    if (Modules.Players.Pocket.GetInventory(p).Count >= Modules.Players.Pocket.Singleton.Config.MaxCapacity)
                     {
-                        response = $"Reached limit of {SCPRP.Singleton.Config.PocketConfig.MaxCapacity} in pocket!";
+                        response = $"Reached limit of {Modules.Players.Pocket.Singleton.Config.MaxCapacity} in pocket!";
                         return false;
                     }
                     var entity = p.GetLookingEntity();

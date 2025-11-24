@@ -7,15 +7,14 @@ using Utils;
 
 namespace SCPRP.Entities
 {
-    public class money_printer : BaseEntity
+    public class MoneyPrinterConfig
     {
-        public class MoneyPrinterConfig
-        {
-            public int IncreaseAmount { get; set; } = 50;
-            public int Rate { get; set; } = 30;
-
-            public int MoneyLimit { get; set; } = 20000;
-        }
+        public int IncreaseAmount { get; set; } = 50;
+        public int Rate { get; set; } = 30;
+        public int MoneyLimit { get; set; } = 20000;
+    }
+    public class money_printer : BaseEntity<MoneyPrinterConfig>
+    {
 
         public override string Name => "Money Printer";
         public override float MaxHealth => 50;
@@ -64,8 +63,8 @@ namespace SCPRP.Entities
 
             UpdateText();
 
-            IncreaseAmount = SCPRP.Singleton.Config.MoneyPrinterConfig.IncreaseAmount;
-            Rate = SCPRP.Singleton.Config.MoneyPrinterConfig.Rate;
+            IncreaseAmount = Config.IncreaseAmount;
+            Rate = Config.Rate;
 
             nextPrint = DateTime.Now.AddSeconds(Rate);
         }
@@ -101,11 +100,11 @@ namespace SCPRP.Entities
         public override void OnTick()
         {
             if (DateTime.Now < nextPrint) return;
-            if (Amount >= SCPRP.Singleton.Config.MoneyPrinterConfig.MoneyLimit) return;
+            if (Amount >= Config.MoneyLimit) return;
 
             Amount += IncreaseAmount;
-            if (Amount >= SCPRP.Singleton.Config.MoneyPrinterConfig.MoneyLimit)
-                Amount = SCPRP.Singleton.Config.MoneyPrinterConfig.MoneyLimit;
+            if (Amount >= Config.MoneyLimit)
+                Amount = Config.MoneyLimit;
 
             nextPrint = DateTime.Now.AddSeconds(Rate);
         }
