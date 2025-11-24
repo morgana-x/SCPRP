@@ -5,16 +5,16 @@ using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Handlers;
 using LabApi.Features.Wrappers;
 using SCPRP.Extensions;
-using static SCPRP.Modules.Players.Jobs.Government;
+
 namespace SCPRP.Modules.Players.Jobs
 {
-    public class Government : BaseModule
+    public class GovernmentConfig
     {
-        public class GovernmentConfig
-        {
-            public int WarrantExpirySeconds { get; set; } = 350;
-            public int WantedExpirySeconds { get; set; } = 350;
-        }
+        public int WarrantExpirySeconds { get; set; } = 350;
+        public int WantedExpirySeconds { get; set; } = 350;
+    }
+    public class Government : BaseModule<GovernmentConfig>
+    {
 
         public class WantedStatus
         {
@@ -25,7 +25,7 @@ namespace SCPRP.Modules.Players.Jobs
 
             public virtual bool Expired()
             {
-                return DateTime.Now.Subtract(IssueDate).TotalSeconds > Modules.Players.Job.Singleton.Config.GovernmentConfig.WantedExpirySeconds;
+                return DateTime.Now.Subtract(IssueDate).TotalSeconds > Singleton.Config.WantedExpirySeconds;
             }
 
             public WantedStatus(Player player, Player officer, string reason)
@@ -42,7 +42,7 @@ namespace SCPRP.Modules.Players.Jobs
             public WarrantedStatus(Player player, Player officer, string reason) : base(player, officer, reason) { }
             public override bool Expired()
             {
-                return DateTime.Now.Subtract(IssueDate).TotalSeconds > Modules.Players.Job.Singleton.Config.GovernmentConfig.WarrantExpirySeconds;
+                return DateTime.Now.Subtract(IssueDate).TotalSeconds > Singleton.Config.WarrantExpirySeconds;
             }
         }
 

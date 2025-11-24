@@ -350,9 +350,6 @@ namespace SCPRP.Modules.Players
 
 
         };
-
-        public Government.GovernmentConfig GovernmentConfig { get; set; } = new Government.GovernmentConfig();
-
     }
 
 
