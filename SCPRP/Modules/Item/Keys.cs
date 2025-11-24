@@ -1,6 +1,7 @@
 ﻿using Interactables.Interobjects.DoorUtils;
 using InventorySystem;
 using LabApi.Events.Arguments.PlayerEvents;
+using LabApi.Events.Arguments.ServerEvents;
 using LabApi.Features.Wrappers;
 using System.Linq;
 
@@ -12,7 +13,7 @@ namespace SCPRP.Modules.Item
 
         public LabApi.Features.Wrappers.KeycardItem GiveKeys(Player p)
         {
-            return KeycardItem.CreateCustomKeycardMetal(p, "Keys", p.DisplayName, "Keys", new KeycardLevels(DoorPermissionFlags.All), UnityEngine.Color.cyan, UnityEngine.Color.blue, UnityEngine.Color.gray, 2, "123456789123");
+            return KeycardItem.CreateCustomKeycardMetal(p, "Keys", p.DisplayName, "Keys", new KeycardLevels(DoorPermissionFlags.None), UnityEngine.Color.cyan, UnityEngine.Color.blue, UnityEngine.Color.gray, 2, "123456789123");
         }
         public override void Load()
         {
@@ -21,6 +22,7 @@ namespace SCPRP.Modules.Item
             LabApi.Events.Handlers.PlayerEvents.DroppingItem += PlayerDropping;
             LabApi.Events.Handlers.PlayerEvents.InteractingLocker += InteractingLocker;
             LabApi.Events.Handlers.PlayerEvents.InteractingGenerator += InteractingGenerator;
+            LabApi.Events.Handlers.ServerEvents.PickupCreated += PickupCreated;
             LabApi.Events.Handlers.PlayerEvents.Dying += OnDeath;
         }
         public override void Unload()
@@ -30,6 +32,7 @@ namespace SCPRP.Modules.Item
             LabApi.Events.Handlers.PlayerEvents.DroppingItem -= PlayerDropping;
             LabApi.Events.Handlers.PlayerEvents.InteractingLocker -= InteractingLocker;
             LabApi.Events.Handlers.PlayerEvents.InteractingGenerator -= InteractingGenerator;
+            LabApi.Events.Handlers.ServerEvents.PickupCreated -= PickupCreated;
             LabApi.Events.Handlers.PlayerEvents.Dying -= OnDeath;
         }
         public override void Tick()
@@ -53,15 +56,19 @@ namespace SCPRP.Modules.Item
                 GiveKeys(e.Player);
         }
 
-        
+        void PickupCreated(PickupCreatedEventArgs e)
+        {
+            if (e.Pickup.Type == ItemType.KeycardCustomMetalCase)
+                e.Pickup.Destroy();
+        }
         void InteractingLocker(PlayerInteractingLockerEventArgs e)
         {
-            if (IsKey(e.Player.CurrentItem) && !SCPRP.Singleton.Config.DoorsConfig.KeysCanActAsKeycard)
+            if (IsKey(e.Player.CurrentItem) && !Modules.Entities.Door.Singleton.Config.KeysCanActAsKeycard)
                 e.IsAllowed = false;
         }
         void InteractingGenerator(PlayerInteractingGeneratorEventArgs e)
         {
-            if (IsKey(e.Player.CurrentItem) && !SCPRP.Singleton.Config.DoorsConfig.KeysCanActAsKeycard)
+            if (IsKey(e.Player.CurrentItem) && !Modules.Entities.Door.Singleton.Config.KeysCanActAsKeycard)
                 e.IsAllowed = false;
         }
         void InteractingDoor(PlayerInteractingDoorEventArgs e)
@@ -76,7 +83,7 @@ namespace SCPRP.Modules.Item
 
             if (!rpdoor.HasPermission(e.Player))
             {
-                if (!SCPRP.Singleton.Config.DoorsConfig.KeysCanActAsKeycard)
+                if (!Modules.Entities.Door.Singleton.Config.KeysCanActAsKeycard)
                 {
                     e.IsAllowed = false;
                 }

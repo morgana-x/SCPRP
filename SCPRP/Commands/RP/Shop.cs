@@ -29,7 +29,9 @@ namespace SCPRP.Commands.RP
             {
                 response = "Do <color=red>.shop buy item</color> to purchase an item!\nAvailable Items:\n";
                 foreach (var i in Modules.Players.Shop.GetAvaiableItems(p))
-                    response += $"  - <color=yellow>{i.Entity}</color> = ${i.Price} ({ (i.IsShipment ? Entity.Singleton.GetEntities(p, "spawned_shipment").Count :  Entity.Singleton.GetEntities(p, i.Entity).Count)}/{ (i.IsShipment ? SCPRP.Singleton.Config.ShopConfig.MaxShipments : i.Max)})\n";
+                {
+                    response += $"  - <color=yellow>{i.Entity}</color> = ${i.Price} ({(i.IsShipment ? Entity.Singleton.GetEntities(p, "spawned_shipment").Count : Entity.Singleton.GetEntities(p, i.Entity).Count)}/{(i.IsShipment ? Modules.Players.Shop.shopConfig.MaxShipments : i.Max)})\n";
+                }
                 response += "Do <color=red>.shop buy item</color> to purchase an item!";
                 return true;
             }

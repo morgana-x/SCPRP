@@ -357,15 +357,16 @@ namespace SCPRP.Modules.Players
 
 
 
-    public class Job : BaseModule
+    public class Job : BaseModule<JobConfig>
     {
 
         public static Job Singleton;
 
-        public static JobConfig Config { get { return SCPRP.Singleton.Config.JobConfig; } }
+      //  public static JobConfig Config { get { return SCPRP.Singleton.Config.JobConfig; } }
 
         public Dictionary<Player, string> PlayerRoles = new Dictionary<Player, string>();
 
+        public static Dictionary<string,JobDefinition> Jobs { get {  return Singleton.Config != null ? Singleton.Config.Jobs : new Dictionary<string, JobDefinition>(); } }
 
 
         public override void Load()
@@ -415,7 +416,7 @@ namespace SCPRP.Modules.Players
 
             if (e.ChangeReason == RoleChangeReason.LateJoin)
             {
-                SetJob(e.Player, SCPRP.Singleton.Config.JobConfig.DefaultJob);
+                SetJob(e.Player, Config.DefaultJob);
             }
 
             if (e.ChangeReason == RoleChangeReason.Died && e.NewRole.RoleTypeId == RoleTypeId.Spectator)
@@ -502,7 +503,7 @@ namespace SCPRP.Modules.Players
 
             Dictionary<ItemType, ushort> loadout = new Dictionary<ItemType, ushort>();
 
-            foreach(var pair in SCPRP.Singleton.Config.JobConfig.BaseLoadout)
+            foreach(var pair in Config.BaseLoadout)
                 loadout.Add(pair.Key, pair.Value);
             foreach (var pair in job.Loadout)
                 loadout.Add(pair.Key, pair.Value);
@@ -522,7 +523,7 @@ namespace SCPRP.Modules.Players
         }
         public static void SetJob(Player player, string role)
         {
-            string oldjob = Singleton.PlayerRoles.ContainsKey(player) ? Singleton.PlayerRoles[player] : SCPRP.Singleton.Config.JobConfig.DefaultJob;
+            string oldjob = Singleton.PlayerRoles.ContainsKey(player) ? Singleton.PlayerRoles[player] : Singleton.Config.DefaultJob;
             if (!Singleton.PlayerRoles.ContainsKey(player))
                 Singleton.PlayerRoles.Add(player, role);
 
@@ -530,7 +531,7 @@ namespace SCPRP.Modules.Players
 
             float oldhealth = player.IsAlive ? player.Health : player.MaxHealth;
 
-            if (SCPRP.Singleton.Config.JobConfig.UseJobSpawnpoint || GetJobInfo(role).ForceUseSpawnpoint)
+            if (Singleton.Config.UseJobSpawnpoint || GetJobInfo(role).ForceUseSpawnpoint)
             {
                 player.SetRole(GetJobInfo(role).Model, RoleChangeReason.RemoteAdmin, RoleSpawnFlags.UseSpawnpoint & RoleSpawnFlags.AssignInventory);
                 
@@ -555,16 +556,16 @@ namespace SCPRP.Modules.Players
         public static string GetJob(Player player)
         {
             if (!Singleton.PlayerRoles.ContainsKey(player))
-                SetJob(player, SCPRP.Singleton.Config.JobConfig.DefaultJob);
+                SetJob(player, Singleton.Config.DefaultJob);
 
             return Singleton.PlayerRoles[player];
         }
 
         public static JobDefinition GetJobInfo(string job)
         {
-            if (!SCPRP.Singleton.Config.JobConfig.Jobs.ContainsKey(job))
+            if (!Singleton.Config.Jobs.ContainsKey(job))
                 return null;
-            return SCPRP.Singleton.Config.JobConfig.Jobs[job];
+            return Singleton.Config.Jobs[job];
         }
 
         public static JobDefinition GetJobInfo(Player player)
@@ -590,17 +591,18 @@ namespace SCPRP.Modules.Players
         }
         public static bool IsValidJob(string job)
         {
-            return SCPRP.Singleton.Config.JobConfig.Jobs.ContainsKey(job);
+            return Singleton.Config.Jobs.ContainsKey(job);
         }
 
         public static bool IsValidTeam(string team)
         {
-            return SCPRP.Singleton.Config.JobConfig.Teams.ContainsKey(team);
+            return Singleton.Config.Teams.ContainsKey(team);
         }
         public static string GetColouredTeamName(string team)
         {
+            if (Singleton == null) return team;
             if (!IsValidTeam(team)) return team;
-            return $"<color={Config.Teams[team].Colour}>{Config.Teams[team].Name}</color>";
+            return $"<color={Singleton.Config.Teams[team].Colour}>{Singleton.Config.Teams[team].Name}</color>";
         }
 
         private static void SendFakeJobBadge(Player player, Player targetToTrick)
@@ -658,7 +660,7 @@ namespace SCPRP.Modules.Players
         {
             if (DateTime.Now > nextPayday)
             {
-                nextPayday = DateTime.Now.AddSeconds(SCPRP.Singleton.Config.JobConfig.PaydayIntervalSeconds);
+                nextPayday = DateTime.Now.AddSeconds(Singleton.Config.PaydayIntervalSeconds);
                 foreach(var p in Player.GetAll())
                 {
                     var job = p.GetJobInfo();

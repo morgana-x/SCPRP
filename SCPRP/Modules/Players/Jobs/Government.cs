@@ -25,7 +25,7 @@ namespace SCPRP.Modules.Players.Jobs
 
             public virtual bool Expired()
             {
-                return DateTime.Now.Subtract(IssueDate).TotalSeconds > SCPRP.Singleton.Config.JobConfig.GovernmentConfig.WantedExpirySeconds;
+                return DateTime.Now.Subtract(IssueDate).TotalSeconds > Modules.Players.Job.Singleton.Config.GovernmentConfig.WantedExpirySeconds;
             }
 
             public WantedStatus(Player player, Player officer, string reason)
@@ -42,7 +42,7 @@ namespace SCPRP.Modules.Players.Jobs
             public WarrantedStatus(Player player, Player officer, string reason) : base(player, officer, reason) { }
             public override bool Expired()
             {
-                return DateTime.Now.Subtract(IssueDate).TotalSeconds > SCPRP.Singleton.Config.JobConfig.GovernmentConfig.WarrantExpirySeconds;
+                return DateTime.Now.Subtract(IssueDate).TotalSeconds > Modules.Players.Job.Singleton.Config.GovernmentConfig.WarrantExpirySeconds;
             }
         }
 

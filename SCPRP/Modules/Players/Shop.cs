@@ -111,11 +111,12 @@ namespace SCPRP.Modules.Players
 
     }
 
-    public class Shop : BaseModule
+    public class Shop : BaseModule<ShopConfig>
     {
         public static Shop Singleton;
 
-        public static ShopConfig shopConfig {  get { return SCPRP.Singleton.Config.ShopConfig; } }
+        public static ShopConfig shopConfig {  get { return Shop.Singleton != null ? Singleton.Config : new ShopConfig(); } }
+
         public override void Load()
         {
             Singleton = this;
@@ -129,7 +130,7 @@ namespace SCPRP.Modules.Players
 
         public static List<ShopItem> GetAvaiableItems(Player pl)
         {
-            return SCPRP.Singleton.Config.ShopConfig.Items.Where((x) => { return x.CanPurchase(pl); }).ToList();
+            return shopConfig.Items.Where((x) => { return x.CanPurchase(pl); }).ToList();
         }
 
         public static List<ShopItem> GetItems()

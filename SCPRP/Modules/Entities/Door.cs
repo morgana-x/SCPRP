@@ -37,7 +37,7 @@ namespace SCPRP.Modules.Entities
         public bool KeysCanActAsKeycard { get; set; } = false;
         public int MaxDoors { get; set; } = 4;
 
-        public Dictionary<RoomName, DoorDefinition> DoorDefinitions = new Dictionary<RoomName, DoorDefinition>()
+        public Dictionary<RoomName, DoorDefinition> DoorDefinitions { get; set; } = new Dictionary<RoomName, DoorDefinition>()
         {
             [RoomName.LczClassDSpawn] = new DoorDefinition("<color=#00e870>Spawn</color>", new List<string>() { "world"}),
             [RoomName.LczCheckpointA] = new DoorDefinition("<color=#0659be>Checkpoint A</color>", new List<string>() { "government" }),
@@ -171,7 +171,7 @@ namespace SCPRP.Modules.Entities
                 p.Notify("<color=red>You can't afford this door!</color>");
                 return;
             }
-            if (Entities.Door.GetOwnedDoors(p).Count >= SCPRP.Singleton.Config.DoorsConfig.MaxDoors)
+            if (Entities.Door.GetOwnedDoors(p).Count >= Modules.Entities.Door.Singleton.Config.MaxDoors)
             {
                 p.Notify("<color=red>Reached max amount of doors!</color>");
                 return;
@@ -201,7 +201,7 @@ namespace SCPRP.Modules.Entities
         }
     }
 
-    public class Door : BaseModule
+    public class Door : BaseModule<DoorsConfig>
     {
         public Dictionary<LabApi.Features.Wrappers.Door, RPDoor> Doors = new Dictionary<LabApi.Features.Wrappers.Door, RPDoor>();
 
@@ -315,9 +315,9 @@ namespace SCPRP.Modules.Entities
             
             foreach (var r in door.Door.Rooms)
             {
-                if (!SCPRP.Singleton.Config.DoorsConfig.DoorDefinitions.ContainsKey(r.Name))
+                if (!Singleton.Config.DoorDefinitions.ContainsKey(r.Name))
                     continue;
-                return SCPRP.Singleton.Config.DoorsConfig.DoorDefinitions[r.Name];
+                return Singleton.Config.DoorDefinitions[r.Name];
             }
 
             return new DoorDefinition();

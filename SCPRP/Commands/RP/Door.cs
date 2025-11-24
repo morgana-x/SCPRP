@@ -124,7 +124,7 @@ namespace SCPRP.Commands.RP
                 response = "<color=red>You can't afford this door!</color>";
                 return false;
             }
-            if (Modules.Entities.Door.GetOwnedDoors(p).Count >= SCPRP.Singleton.Config.DoorsConfig.MaxDoors)
+            if (Modules.Entities.Door.GetOwnedDoors(p).Count >= Modules.Entities.Door.Singleton.Config.MaxDoors)
             {
                 response = "<color=red>Reached max amount of doors!</color>";
                 return false;

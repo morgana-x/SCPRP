@@ -1,9 +1,11 @@
 ﻿using LabApi.Features.Console;
+using LabApi.Loader;
 using MEC;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace SCPRP
 {
@@ -12,6 +14,22 @@ namespace SCPRP
         public abstract void Load();
         public abstract void Unload();
         public abstract void Tick();
+        public virtual void LoadConfigs()
+        {
+        }
+    }
+
+    public abstract class BaseModule <TConfig> : BaseModule where TConfig : class, new()
+    {
+        public TConfig? Config { get; set; }
+        public override void LoadConfigs()
+        {
+   
+            string filepath = SCPRP.Singleton.GetConfigPath(this.GetType().Name + ".yml");
+            Logger.Info($"Loading {this.GetType().Name + ".yml"}...");
+            if (SCPRP.Singleton.TryLoadConfig<TConfig>(filepath, out TConfig? config))
+                Config = config;
+        }
     }
     public class Module
     {
@@ -35,6 +53,7 @@ namespace SCPRP
         public void AddModule(Type type)
         {
             var module = Activator.CreateInstance(type);
+            ((BaseModule)module).LoadConfigs();
             ((BaseModule)module).Load();
             LoadedModules.Add(type, module);
             Logger.Info($"Loaded module {type.Name}");

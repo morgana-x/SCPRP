@@ -18,7 +18,7 @@ namespace SCPRP.Commands.RP
 
 
             response = "Do <color=yellow>.job jobid</color> to become a job!\nJobs:\n";
-            foreach(var pair in SCPRP.Singleton.Config.JobConfig.Jobs)
+            foreach(var pair in Job.Jobs)
             {
                 var maxsymbol = pair.Value.MaxPlayers != 0 ? pair.Value.MaxPlayers.ToString() : "∞";
                 response += $" - <color={pair.Value.HexColour()}>{pair.Key}</color> = <color={pair.Value.HexColour()}>{pair.Value.Name}</color> ({Job.GetJobPlayers(pair.Key).Count}/{maxsymbol})<color=#555555> - {pair.Value.Description}</color>\n";
