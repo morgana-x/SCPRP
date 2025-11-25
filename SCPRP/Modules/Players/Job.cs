@@ -563,9 +563,10 @@ namespace SCPRP.Modules.Players
                 return false;
             }
 
-            if (DateTime.Now < GetNextJobChange(player))
+            var nextChangeJob = GetNextJobChange(player);
+            if (DateTime.Now < nextChangeJob)
             {
-                response = $"<color=red>Wait {(int)Math.Round(GetNextJobChange(player).Subtract(DateTime.Now).TotalSeconds)} seconds until changing jobs again!</color>";
+                response = $"<color=red>Wait {(int)Math.Round(nextChangeJob.Subtract(DateTime.Now).TotalSeconds)} seconds until changing jobs again!</color>";
                 return false;
             }
             SetNextJobChange(player, DateTime.Now.AddSeconds(15));
