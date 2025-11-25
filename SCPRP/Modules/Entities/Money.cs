@@ -20,11 +20,11 @@ namespace SCPRP.Modules.Entities
         {
             if (player.GetMoney() < amount)
             {
-                HUD.ShowHint(player, "<color=red>Insufficient funds!</color>");
+                HUD.Notify(player, "<color=red>Insufficient funds!</color>");
                 return null;
             }
             player.AddMoney(-amount);
-            HUD.ShowHint(player, $"<color=green>Dropped ${amount}</color>");
+            HUD.Notify(player, $"<color=green>Dropped ${amount}</color>");
             return DropMoney(player.Camera.position + (player.Camera.forward * 0.8f), UnityEngine.Quaternion.Euler(player.Rotation.eulerAngles.x, 0, 0), amount);
         }
 

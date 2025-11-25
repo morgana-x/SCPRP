@@ -67,6 +67,11 @@ namespace SCPRP.Modules.Players.Jobs
             return (Singleton != null) && Singleton.Warranted.ContainsKey(player.UserId);
         }
 
+        public static WantedStatus GetWantedInfo(Player player)
+        {
+            return ((Singleton != null) && Singleton.Wanted.ContainsKey(player.UserId)) ? Singleton.Wanted[player.UserId] : null;
+        }
+
         public static void SetWanted(Player player, string reason, Player officer)
         {
             var wantedstatus = new WantedStatus(player, officer, reason);
@@ -74,6 +79,8 @@ namespace SCPRP.Modules.Players.Jobs
                 Singleton.Wanted[player.UserId] = wantedstatus;
             else
                 Singleton.Wanted.Add(player.UserId, wantedstatus);
+
+            HUD.NotifyAll($"{player.GetColouredName()} has been wanted by {officer.GetColouredName()}", top: true);
         }
 
         public static void Unwant(Player player)
@@ -88,6 +95,8 @@ namespace SCPRP.Modules.Players.Jobs
                 Singleton.Warranted[player.UserId] = wantedstatus;
             else
                 Singleton.Warranted.Add(player.UserId, wantedstatus);
+
+            HUD.NotifyAll($"{player.GetColouredName()} has been warranted by {officer.GetColouredName()}",top:true);
         }
 
         public override void Load()
@@ -112,6 +121,7 @@ namespace SCPRP.Modules.Players.Jobs
             {
                 if (Wanted[item].Expired())
                 {
+                    HUD.NotifyAll($"{Wanted[item].WantedPlayer.GetColouredName()} is no longer wanted!", top:true);
                     Wanted.Remove(item);
                 }
             }
@@ -119,6 +129,7 @@ namespace SCPRP.Modules.Players.Jobs
             {
                 if (Warranted[item].Expired())
                 {
+                    HUD.NotifyAll($"{Wanted[item].WantedPlayer.GetColouredName()} is no longer warranted!", top:true);
                     Warranted.Remove(item);
                 }
             }

@@ -26,31 +26,8 @@ namespace SCPRP.Commands.RP
                 return false;
             }
 
-            var job = args.ElementAt(0);
-            if (!Job.IsValidJob(args.ElementAt(0)))
-            {
-                response = $"Invalid job \"{args.ElementAt(0)}\"!";
-                return false;
-            }
 
-            var p = Player.Get(sender);
-
-            if (p.GetJob() == job)
-            {
-                response = $"You are already a {Job.GetColouredJobName(job)}!";
-                return false;
-            }
-
-            var jobinfo = Job.GetJobInfo(job);
-            if ( (jobinfo.MaxPlayers > 0) && (Job.GetJobPlayers(job).Count >= jobinfo.MaxPlayers))
-            {
-                response = $"Job is at maximum capacity! Wait for a player to change from the job!";
-                return false;
-            }
-
-            p.SetJob(job);
-            response = $"Changed to job {Job.GetColouredJobName(job)}!";
-            return true;
+            return Job.TryChangeJob(Player.Get(sender), args.First(), out response); ;
         }
     }
 }

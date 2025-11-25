@@ -113,7 +113,7 @@ namespace SCPRP.Modules.Players
             direction.y = 0;
             Quaternion rotation = Quaternion.LookRotation(-direction);
             toy.Transform.rotation = rotation;
-            observer.SendFakeSyncVar(toy.Base, 2, rotation);
+            observer.SendFakeSyncVar(toy.Base, 2, toy.Transform.localRotation);
         }
         void SendUpdateTextAll(Player pl)
         {

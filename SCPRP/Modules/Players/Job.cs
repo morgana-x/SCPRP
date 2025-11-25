@@ -10,6 +10,7 @@ using SCPRP.Extensions;
 using System.Linq;
 using System.Globalization;
 using SCPRP.Modules.Players.Jobs;
+using Unity.Jobs;
 
 namespace SCPRP.Modules.Players
 {
@@ -404,6 +405,9 @@ namespace SCPRP.Modules.Players
         {
             if (PlayerRoles.ContainsKey(e.Player))
                 PlayerRoles.Remove(e.Player);
+
+            if (JobCooldowns.ContainsKey(e.Player))
+                JobCooldowns.Remove(e.Player);
         }
 
         void Spawned(PlayerChangedRoleEventArgs e)
@@ -465,7 +469,7 @@ namespace SCPRP.Modules.Players
             if (!shouldDrop(e.Player, e.Item.Type))
             {
                 e.IsAllowed = false;
-                HUD.ShowHint(e.Player, "<color=red>Cannot drop loadout item!</color>");
+                HUD.Notify(e.Player, "<color=red>Cannot drop loadout item!</color>");
             }
         }
 
@@ -484,7 +488,7 @@ namespace SCPRP.Modules.Players
             if (!shouldDrop(e.Player, e.Pickup.Type))
             {
                 e.IsAllowed = false;
-                HUD.ShowHint(e.Player, "<color=red>Cannot drop loadout item!</color>");
+                HUD.Notify(e.Player, "<color=red>Cannot drop loadout item!</color>");
             }
         }
 
@@ -517,6 +521,59 @@ namespace SCPRP.Modules.Players
                 for (int x=0; x < i.Value; x++)
                     e.AddItem(i.Key);
             }
+        }
+
+        static Dictionary<Player, DateTime> JobCooldowns = new Dictionary<Player, DateTime>();
+
+        static DateTime GetNextJobChange(Player p)
+        {
+            return JobCooldowns.ContainsKey(p) ? JobCooldowns[p] : DateTime.Now;
+        }
+        static void SetNextJobChange(Player p, DateTime time)
+        {
+            if (JobCooldowns.ContainsKey(p))
+                JobCooldowns[p] = time;
+            else
+                JobCooldowns.Add(p, time);
+        }
+        public static bool TryChangeJob(Player player, string role, out string response)
+        {
+            if (player == null)
+            {
+                response = "";
+                return false;
+            }
+            if (player.GetJob() == role)
+            {
+                response = $"<color=red>Already a</color> {Job.GetColouredJobName(role)}";
+                return false;
+            }
+
+            if (!IsValidJob(role))
+            {
+                response = "<color=red>Invalid job!</color>";
+                return false;
+            }
+
+
+            var jobinfo = Job.GetJobInfo(role);
+            if ((jobinfo.MaxPlayers > 0) && (Job.GetJobPlayers(role).Count >= jobinfo.MaxPlayers))
+            {
+                response = $"<color=red>Job player limit reached! ({Job.GetJobPlayers(role).Count}/{jobinfo.MaxPlayers})</color>";
+                return false;
+            }
+
+            if (DateTime.Now < GetNextJobChange(player))
+            {
+                response = $"<color=red>Wait {(int)Math.Round(GetNextJobChange(player).Subtract(DateTime.Now).TotalSeconds)} seconds until changing jobs again!</color>";
+                return false;
+            }
+            SetNextJobChange(player, DateTime.Now.AddSeconds(15));
+
+            Job.SetJob(player, role);
+            HUD.NotifyAll($"{player.DisplayName} has become a {Job.GetColouredJobName(role)}!");
+            response = $"{player.DisplayName} has become a {Job.GetColouredJobName(role)}!";
+            return true;
         }
         public static void SetJob(Player player, string role)
         {
@@ -664,7 +721,7 @@ namespace SCPRP.Modules.Players
                     if (job == null) continue;
                     if (job.Payday == 0) continue;
                     p.AddMoney(job.Payday);
-                    HUD.ShowHint(p, $"Payday! Received ${job.Payday}!");
+                    HUD.Notify(p, $"Payday! Received ${job.Payday}!");
                 }
             }
         }

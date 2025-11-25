@@ -59,7 +59,7 @@ namespace SCPRP.Entities
 
         public override void OnInteract(Player player)
         {
-            HUD.ShowHint(player, $"<color=green>Picked up ${_amount}</color>");
+            HUD.Notify(player, $"<color=green>Picked up ${_amount}</color>");
             player.AddMoney(_amount);
             _amount = 0;
             Destroy();

@@ -150,7 +150,7 @@ namespace SCPRP.Modules.Players
         {
             if (!System.Enum.TryParse(item.Entity, out ItemType gameItem))
             {
-                HUD.ShowHint(p, $"<color #ff5555>ERROR SHIPMENT ITEM WAS INVALID</color>");
+                HUD.Notify(p, $"<color #ff5555>ERROR SHIPMENT ITEM WAS INVALID</color>");
                 return;
             }
 
@@ -179,27 +179,27 @@ namespace SCPRP.Modules.Players
         {
             if (!item.CanPurchase(p))
             {
-                HUD.ShowHint(p, $"<color #ff5555>Not allowed to purchase this entity! Wrong job/rank!</color>");
+                HUD.Notify(p, $"<color #ff5555>Not allowed to purchase this entity! Wrong job/rank!</color>");
                 return;
             }
             if (p.GetMoney() < item.Price)
             {
-                HUD.ShowHint(p, $"<color #ff5555>Cannot afford this entity!</color>");
+                HUD.Notify(p, $"<color #ff5555>Cannot afford this entity!</color>");
                 return;
             }
             if (!item.IsShipment && Entity.Singleton.GetEntities(p, item.Entity).Count >= item.Max)
             {
-                HUD.ShowHint(p, $"<color #ff5555>Reached limit of {item.Max} {item.Entity}s!</color>");
+                HUD.Notify(p, $"<color #ff5555>Reached limit of {item.Max} {item.Entity}s!</color>");
                 return;
             }
             else if (item.IsShipment && item.ShipmentAmount > 1 && Entity.Singleton.GetEntities(p, "spawned_shipment").Count >= shopConfig.MaxShipments)
             {
-                HUD.ShowHint(p, $"<color #ff5555>Reached limit of {shopConfig.MaxShipments} spawned_shipments!</color>");
+                HUD.Notify(p, $"<color #ff5555>Reached limit of {shopConfig.MaxShipments} spawned_shipments!</color>");
                 return;
             }
 
             p.AddMoney(-item.Price);
-            HUD.ShowHint(p, $"<color #55ff55>Purchased {item.Entity} for ${item.Price}!</color>");
+            HUD.Notify(p, $"<color #55ff55>Purchased {item.Entity} for ${item.Price}!</color>");
 
             if (item.IsShipment)
                 SpawnShipment(p, item);

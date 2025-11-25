@@ -86,7 +86,7 @@ namespace SCPRP.Entities
             var amount = Amount;
             Amount = 0;
             player.AddMoney(amount);
-            HUD.ShowHint(player, $"<color #55ff55>Picked up {amount}!</color>");
+            HUD.Notify(player, $"<color #55ff55>Picked up {amount}!</color>");
             UpdateText();
         }
 

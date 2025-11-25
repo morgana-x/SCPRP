@@ -18,7 +18,6 @@ namespace SCPRP.Commands.Admin
 
         protected override bool ExecuteParent(ArraySegment<string> args, ICommandSender sender, out string response)
         {
-
             if (args.Count < 2)
             {
                 response = "Missing arguments! Correct Usage: setjob name jobid";
@@ -40,7 +39,8 @@ namespace SCPRP.Commands.Admin
                 return false;
             }
 
-            pl.SetJob(job);
+            Job.SetJob(pl, job);
+    
             response = $"Set {pl.DisplayName}'s job to {job}";
             return true;
         }

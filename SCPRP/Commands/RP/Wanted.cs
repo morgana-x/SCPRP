@@ -49,7 +49,13 @@ namespace SCPRP.Commands.RP
             if (reason.Trim() == "")
                 reason = "Illegal Activities";
 
-     
+
+            reason = reason.Replace("</color>", "").Replace("<color", "").Replace("<size", "").Replace("</size>", "");
+            if (reason.Length > 32)
+            {
+                response = "Wanted reason too long! 32 character limit!";
+                return false;
+            }
        
             response = $"{target.DisplayName} is now wanted! Reason: {reason}";
             Modules.Players.Jobs.Government.SetWanted(target, reason, p);
