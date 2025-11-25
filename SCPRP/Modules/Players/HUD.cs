@@ -12,7 +12,7 @@ namespace SCPRP.Modules.Players
     public class HUDConfig
     {
         public bool Enabled { get; set; } = true;
-        public string Layout = "<br><br><align=\"center\">{topnotify3}<br>{topnotify2}<br>{topnotify1}</align><br><br><br><br><br><br><br><br><align=right>{notify5}<br>{notify4}<br>{notify3}<br>{notify2}<br>{notify1}<br></align><br>\t<align=left>{job} <color=#55ff55>${money}</color>\t{wanted}</align>";
+        public string Layout = "<br><br><align=\"center\">{topnotify3}<br>{topnotify2}<br>{topnotify1}</align><br><br><br><br><br><br><br><br><align=right>{notify5}<br>{notify4}<br>{notify3}<br>{notify2}<br>{notify1}<br></align><br>\t<align=left>{job}  <color=#55ff55>${money}</color>\t{wanted}</align>";
     }
 
     public class Notification
