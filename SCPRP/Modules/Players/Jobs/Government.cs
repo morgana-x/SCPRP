@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Handlers;
@@ -103,11 +104,13 @@ namespace SCPRP.Modules.Players.Jobs
         {
             Singleton = this;
             PlayerEvents.Cuffing += Cuffing;
+            PlayerEvents.Death += Death;
         }
 
         public override void Unload()
         {
             PlayerEvents.Cuffing -= Cuffing;
+            PlayerEvents.Death -= Death;
         }
         void Cuffing(PlayerCuffingEventArgs e)
         {
@@ -115,6 +118,14 @@ namespace SCPRP.Modules.Players.Jobs
                 e.IsAllowed = false;
         }
 
+        void Death(PlayerDeathEventArgs e)
+        {
+            if (IsWanted(e.Player))
+            {
+                HUD.NotifyAll($"{e.Player.GetColouredName()} is no longer wanted!", top: true);
+                Unwant(e.Player);
+            }
+        }
         public override void Tick()
         {
             foreach(var item in Wanted.Keys.ToList())
