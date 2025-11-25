@@ -178,6 +178,7 @@ namespace SCPRP
             {
                 if (e.Pickup != ent.InteractablePickup) continue;
                 e.IsAllowed = false;
+                e.Pickup.IsInUse = false;
                 try
                 {
                     ent.OnInteract(e.Player);
