@@ -1,4 +1,5 @@
-﻿using LabApi.Events.Arguments.PlayerEvents;
+﻿using Hints;
+using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Handlers;
 using LabApi.Features.Wrappers;
 using SCPRP.Extensions;
@@ -76,6 +77,7 @@ namespace SCPRP.Modules.Players
 
             }
         }
+        static HintEffect[] HintEffects = new HintEffect[] { new AlphaEffect(255f) };
         public override void Tick()
         {
             if (!Config.Enabled) return;
@@ -100,7 +102,7 @@ namespace SCPRP.Modules.Players
                     for (int i = 0; i < 3; i++)
                         hud = hud.Replace("{topnotify" + (i + 1).ToString() + "}", topnotifications.Count > i ? topnotifications[i].Message : "");
 
-                    p.SendHint(hud, 0.7f);
+                    p.SendHint(hud, HintEffects, 0.7f);
                 }
                 catch (Exception e)
                 {
