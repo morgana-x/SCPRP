@@ -1,6 +1,7 @@
 ﻿using LabApi.Features.Wrappers;
 using SCPRP.Extensions;
 using SCPRP.Modules.Players;
+using SCPRP.Modules.Players.Jobs;
 using System;
 using UnityEngine;
 using Utils;
@@ -72,7 +73,16 @@ namespace SCPRP.Entities
         public override void OnDamage(Player player, int amount)
         {
             Health -= amount;
-            if (Health <= 0) Destroy();
+            if (Health <= 0)
+            {
+                Destroy();
+                if (OwnerUserId != player.UserId && Government.IsGovernment(player))
+                {
+                    var reward = 500;
+                    player.AddMoney(reward);
+                    player.Notify($"You earnt ${reward} for destroying the printer!");
+                }
+            }
         }
 
         public override void OnDestroy()
@@ -86,7 +96,7 @@ namespace SCPRP.Entities
             var amount = Amount;
             Amount = 0;
             player.AddMoney(amount);
-            HUD.Notify(player, $"<color #55ff55>Picked up {amount}!</color>");
+            HUD.Notify(player, $"<color #55ff55>Picked up ${amount}!</color>");
             UpdateText();
         }
 

@@ -11,6 +11,7 @@ using System.Linq;
 using System.Globalization;
 using SCPRP.Modules.Players.Jobs;
 using Unity.Jobs;
+using SCPRP.Modules.Items;
 
 namespace SCPRP.Modules.Players
 {
@@ -221,6 +222,8 @@ namespace SCPRP.Modules.Players
                 Model = RoleTypeId.ClassD,
 
                 Payday = 150,
+
+                Loadout = new Dictionary<string, ushort>() { ["Lockpick"]= 1},
 
                 MaxPlayers = 5,
 
@@ -742,6 +745,9 @@ namespace SCPRP.Modules.Players
             if (job == null) return;
             foreach (var i in e.Player.Items.ToList())
             {
+                var customitem = CustomItem.GetCustomItem(i);
+                if (customitem != null && job.Loadout.ContainsKey(customitem.GetType().Name))
+                    e.Player.RemoveItem(i);
                 if (job.Loadout.ContainsKey(Enum.GetName(typeof(ItemType), i.Type)))
                     e.Player.RemoveItem(i);
             }

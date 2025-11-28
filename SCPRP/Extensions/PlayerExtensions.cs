@@ -1,6 +1,7 @@
 ﻿using InventorySystem.Items;
 using LabApi.Features.Wrappers;
 using SCPRP.Modules.DB;
+using SCPRP.Modules.Items;
 using SCPRP.Modules.Players;
 using System;
 using UnityEngine;

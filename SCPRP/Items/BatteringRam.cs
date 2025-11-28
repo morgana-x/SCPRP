@@ -1,6 +1,7 @@
 ﻿using LabApi.Features.Wrappers;
 using SCPRP.Extensions;
 using SCPRP.Modules.Entities;
+using SCPRP.Modules.Items;
 using SCPRP.Modules.Players.Jobs;
 using System;
 using Utils;
@@ -32,6 +33,24 @@ namespace SCPRP.Items
         {
            ((ParticleDisruptorItem)Item).StoredAmmo = ((ParticleDisruptorItem)Item).MaxAmmo;
       
+
+        }
+
+        public override void OnUnequip(Player player)
+        {
+           
+        }
+        public override void OnEquip(Player player)
+        {
+            
+        }
+        public override void OnUsing(Player player)
+        {
+
+        }
+
+        public override void OnTick(Player player)
+        {
 
         }
 
