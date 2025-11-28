@@ -6,7 +6,7 @@ using LabApi.Features.Wrappers;
 using System.Linq;
 
 
-namespace SCPRP.Modules.Item
+namespace SCPRP.Modules.Items
 {
     public class Keys : BaseModule
     {

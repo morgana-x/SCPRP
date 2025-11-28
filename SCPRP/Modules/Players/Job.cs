@@ -33,7 +33,7 @@ namespace SCPRP.Modules.Players
 
         public bool Hitman { get; set; } = false;
 
-        public Dictionary<ItemType, ushort> Loadout { get; set; } = new Dictionary<ItemType, ushort>();
+        public Dictionary<string, ushort> Loadout { get; set; } = new Dictionary<string, ushort>();
         static Vector3 HexToCol(string colour)
         {
             return new Vector3(byte.Parse(colour.Substring(1, 2), NumberStyles.AllowHexSpecifier), byte.Parse(colour.Substring(3, 2), NumberStyles.AllowHexSpecifier), byte.Parse(colour.Substring(5, 2), NumberStyles.AllowHexSpecifier));
@@ -83,6 +83,15 @@ namespace SCPRP.Modules.Players
                 return NearestBadgeInfoColour(colour);
             return Colour;
         }
+
+        public JobDefinition(){ }
+
+        public JobDefinition(Dictionary<ItemType, ushort> loadout)
+        {
+            foreach(var pair in loadout)
+                this.Loadout.Add(Enum.GetName(typeof(ItemType), pair.Key), pair.Value);
+        }
+
     }
 
     public class TeamDefinition
@@ -97,7 +106,9 @@ namespace SCPRP.Modules.Players
         public string DefaultJob { get; set; } = "dclass";
 
         public int PaydayIntervalSeconds { get; set; } = 600;
-        public Dictionary<ItemType, ushort> BaseLoadout { get; set; } = new Dictionary<ItemType, ushort>();
+        public Dictionary<string, ushort> BaseLoadout { get; set; } = new Dictionary<string, ushort>()
+        {
+        };
 
 
         public Dictionary<string, TeamDefinition> Teams { get; set; } = new Dictionary<string, TeamDefinition>()
@@ -186,7 +197,7 @@ namespace SCPRP.Modules.Players
                 Team = "criminals"
             },
 
-            ["medic"] = new JobDefinition()
+            ["medic"] = new JobDefinition(new Dictionary<ItemType, ushort>() { [ItemType.KeycardJanitor] = 1 })
             {
                 Name = "Medic",
                 Description = "Sells medical supplies",
@@ -194,7 +205,6 @@ namespace SCPRP.Modules.Players
 
                 Model = RoleTypeId.ClassD,
 
-                Loadout = new Dictionary<ItemType, ushort>() { [ItemType.KeycardJanitor] = 1 },
                 Payday = 1,
 
                 MaxPlayers = 1,
@@ -216,7 +226,7 @@ namespace SCPRP.Modules.Players
 
                 Team = "criminals"
             },
-            ["hitman"] = new JobDefinition()
+            ["hitman"] = new JobDefinition(new Dictionary<ItemType, ushort>() { [ItemType.KeycardScientist] = 1, [ItemType.GunCOM15] = 1, [ItemType.Ammo9x19] = 20 })
             {
                 Name = "Hitman",
                 Description = "Get that sweet blood money",
@@ -224,7 +234,6 @@ namespace SCPRP.Modules.Players
 
                 Model = RoleTypeId.Tutorial,
 
-                Loadout = new Dictionary<ItemType, ushort>() { [ItemType.KeycardScientist] = 1, [ItemType.GunCOM15] = 1, [ItemType.Ammo9x19]=20},
                 Payday = 150,
 
                 MaxPlayers = 2,
@@ -241,14 +250,13 @@ namespace SCPRP.Modules.Players
 
                 Model = RoleTypeId.Tutorial,
 
-                Loadout = new Dictionary<ItemType, ushort>() { },
                 Payday = 150,
 
                 MaxPlayers = 3,
 
                 Team = "criminals"
             },
-            ["scientist"] = new JobDefinition()
+            ["scientist"] = new JobDefinition(new Dictionary<ItemType, ushort>() { [ItemType.KeycardScientist] = 1 })
             {
                 Name = "Scientist",
                 Description = "A very bad scientist, both morally and literally.",
@@ -256,8 +264,6 @@ namespace SCPRP.Modules.Players
 
                 Model = RoleTypeId.Scientist,
                 Spawnpoint = new SpawnDefinition(RoleTypeId.Scientist),
-
-                Loadout = new Dictionary<ItemType, ushort>(){ [ItemType.KeycardScientist] = 1 },
 
                 MaxPlayers = 5,
 
@@ -275,7 +281,7 @@ namespace SCPRP.Modules.Players
 
                 MaxPlayers = 5,
 
-                Loadout = new Dictionary<ItemType, ushort>(){ [ItemType.KeycardGuard] = 1, [ItemType.GunFSP9] = 1, [ItemType.ArmorLight] = 1, [ItemType.Ammo9x19] = 70, [ItemType.Radio]=1},
+                Loadout = new Dictionary<string, ushort>(){ ["KeycardGuard"] = 1, ["GunFSP9"] = 1, ["ArmorLight"] = 1, ["Ammo9x19"] = 70, ["Radio"]=1, ["BatteringRam"] = 1},
 
                 Payday = 250,
 
@@ -291,7 +297,7 @@ namespace SCPRP.Modules.Players
 
                 MaxPlayers = 3,
 
-                Loadout = new Dictionary<ItemType, ushort>() { [ItemType.KeycardMTFOperative] = 1, [ItemType.GunE11SR] = 1, [ItemType.ArmorHeavy] = 1, [ItemType.Ammo556x45] = 70, [ItemType.Radio] = 1 },
+                Loadout = new Dictionary<string, ushort>() { ["KeycardMTFOperative"] = 1, ["GunE11SR"] = 1, ["ArmorHeavy"] = 1, ["Ammo556x45"] = 70, ["Radio"] = 1, ["BatteringRam"] = 1 },
 
                 Payday = 250,
 
@@ -307,21 +313,19 @@ namespace SCPRP.Modules.Players
 
                 MaxPlayers = 1,
 
-                Loadout = new Dictionary<ItemType, ushort>() { [ItemType.KeycardMTFOperative] = 1, [ItemType.GunE11SR] = 1, [ItemType.ArmorHeavy] = 1, [ItemType.Ammo556x45] = 70, [ItemType.Radio] = 1 },
+                Loadout = new Dictionary<string, ushort>() { ["KeycardMTFOperative"] = 1, ["GunE11SR"] = 1, ["ArmorHeavy"] = 1, ["Ammo556x45"] = 70, ["Radio"] = 1, ["BatteringRam"] = 1 },
 
                 Payday = 250,
 
                 Team = "government"
             },
-            ["overseer"] = new JobDefinition()
+            ["overseer"] = new JobDefinition(new Dictionary<ItemType, ushort>() { [ItemType.KeycardO5] = 1, [ItemType.Radio] = 1 })
             {
                 Name = "Overseer",
                 Description = "Controls the facility (>:3), Guards must follow their orders",
                 Colour = "crimson",
 
                 Model = RoleTypeId.Scientist,
-                
-                Loadout = new Dictionary<ItemType, ushort>(){ [ItemType.KeycardO5] = 1, [ItemType.Radio] = 1 },
 
                 MaxPlayers = 1,
 
@@ -329,7 +333,7 @@ namespace SCPRP.Modules.Players
 
                 Team = "government"
             },
-            ["rebel"] = new JobDefinition()
+            ["rebel"] = new JobDefinition(new Dictionary<ItemType, ushort>() { [ItemType.KeycardChaosInsurgency] = 1, [ItemType.GunAK] = 1, [ItemType.ArmorHeavy] = 1, [ItemType.GunRevolver] = 1, [ItemType.Ammo762x39] = 50, [ItemType.Ammo44cal] = 10 })
             {
                 Name = "Rebel",
                 Description = "Hates the evil facility and loves D-Class!",
@@ -337,8 +341,6 @@ namespace SCPRP.Modules.Players
 
                 Model = RoleTypeId.ChaosConscript,
                 Spawnpoint = new SpawnDefinition(RoleTypeId.ChaosConscript),
-
-                Loadout = new Dictionary<ItemType, ushort>() { [ItemType.KeycardChaosInsurgency] = 1, [ItemType.GunAK] =1, [ItemType.ArmorHeavy] = 1, [ItemType.GunRevolver]=1, [ItemType.Ammo762x39]=50, [ItemType.Ammo44cal]=10 },
 
                 MaxPlayers = 4,
 
@@ -374,6 +376,7 @@ namespace SCPRP.Modules.Players
             PlayerEvents.ChangedRole += Spawned;
             PlayerEvents.Left += Left;
             PlayerEvents.ReceivingLoadout += Loadout;
+            PlayerEvents.ReceivedLoadout += ReceivedLoadout;
             PlayerEvents.ThrowingItem += Throwing;
             PlayerEvents.DroppingItem += Dropping;
             PlayerEvents.DroppingAmmo += DroppingAmmo;
@@ -388,6 +391,7 @@ namespace SCPRP.Modules.Players
             PlayerEvents.ChangedRole -= Spawned;
             PlayerEvents.Left -= Left;
             PlayerEvents.ReceivingLoadout -= Loadout;
+            PlayerEvents.ReceivedLoadout -= ReceivedLoadout;
             PlayerEvents.ThrowingItem -= Throwing;
             PlayerEvents.DroppingItem -= Dropping;
             PlayerEvents.DroppingAmmo -= DroppingAmmo;
@@ -452,21 +456,27 @@ namespace SCPRP.Modules.Players
             SendFakeJobBadgeAll(e.Player);
         }
 
-        bool shouldDrop(Player e, ItemType type)
+        bool shouldDrop(Player e, Item item)
         {
             var jobinfo = e.GetJobInfo();
             if (jobinfo == null) return true;
             var loadout = jobinfo.Loadout;
-            if (!loadout.ContainsKey(type)) return true;
-            var numInventoryItem = e.Inventory.UserInventory.Items.Where((x => { return x.Value.ItemTypeId == type; })).Count();
-            var numLoadoutItem = loadout.Where((x => { return x.Key == type; })).Count();
+
+            string typeString = CustomItem.GetCustomItem(item) != null ? CustomItem.GetCustomItem(item).GetType().Name : item.Type.ToString();
+
+            if (!loadout.ContainsKey(typeString))
+                return true;
+
+
+            var numInventoryItem = e.Inventory.UserInventory.Items.Where((x => { return x.Value.ItemTypeId == item.Type; })).Count();
+            var numLoadoutItem = loadout.Where((x => { return x.Key == typeString; })).Count();
             if (numInventoryItem > numLoadoutItem)
                 return true;
             return false;
         }
         void Dropping(PlayerDroppingItemEventArgs e)
         {
-            if (!shouldDrop(e.Player, e.Item.Type))
+            if (!shouldDrop(e.Player, e.Item))
             {
                 e.IsAllowed = false;
                 HUD.Notify(e.Player, "<color=red>Cannot drop loadout item!</color>");
@@ -478,14 +488,14 @@ namespace SCPRP.Modules.Players
             var jobinfo = e.Player.GetJobInfo();
             if (jobinfo == null) return;
             var loadout = jobinfo.Loadout;
-            if (!loadout.ContainsKey(e.Type)) return;
+            if (!loadout.ContainsKey(Enum.GetName(typeof(ItemType),e.Type))) return;
             e.IsAllowed = false;
         }
 
 
         void Throwing(PlayerThrowingItemEventArgs e)
         {
-            if (!shouldDrop(e.Player, e.Pickup.Type))
+            if (!shouldDrop(e.Player, CustomItem.GetItemFromID(e.Pickup.Base.ItemId))) ;
             {
                 e.IsAllowed = false;
                 HUD.Notify(e.Player, "<color=red>Cannot drop loadout item!</color>");
@@ -502,7 +512,7 @@ namespace SCPRP.Modules.Players
             if (job == null)
                 return;
 
-            Dictionary<ItemType, ushort> loadout = new Dictionary<ItemType, ushort>();
+            Dictionary<string, ushort> loadout = new Dictionary<string, ushort>();
 
             foreach(var pair in Config.BaseLoadout)
                 loadout.Add(pair.Key, pair.Value);
@@ -512,14 +522,41 @@ namespace SCPRP.Modules.Players
             foreach (var i in loadout)
             {
                 if (i.Value == 0) continue;
-
-                if ( Enum.GetName(typeof(ItemType), i.Key).StartsWith("Ammo"))
+                bool isItemType = Enum.TryParse<ItemType>(i.Key, out var type);
+                if (isItemType && i.Key.StartsWith("Ammo"))
                 {
-                    e.AddAmmo(i.Key, i.Value);
+                    e.AddAmmo(type, i.Value);
                     continue;
                 }
-                for (int x=0; x < i.Value; x++)
-                    e.AddItem(i.Key);
+                for (int x = 0; x < i.Value; x++)
+                {
+                    if (isItemType)
+                        e.AddItem(type);
+                }
+            }
+        }
+
+        void ReceivedLoadout(PlayerReceivedLoadoutEventArgs e)
+        {
+            var job = GetJobInfo(e.Player);
+            if (job == null)
+                return;
+
+            Dictionary<string, ushort> loadout = new Dictionary<string, ushort>();
+
+            foreach (var pair in Config.BaseLoadout)
+                loadout.Add(pair.Key, pair.Value);
+            foreach (var pair in job.Loadout)
+                loadout.Add(pair.Key, pair.Value);
+
+            foreach (var i in loadout)
+            {
+                if (i.Value == 0) continue;
+                for (int x = 0; x < i.Value; x++)
+                {
+                    if (!Enum.TryParse<ItemType>(i.Key, out var type))
+                        e.Player.AddItem(i.Key, InventorySystem.Items.ItemAddReason.StartingItem);
+                }
             }
         }
 
@@ -705,7 +742,7 @@ namespace SCPRP.Modules.Players
             if (job == null) return;
             foreach (var i in e.Player.Items.ToList())
             {
-                if (job.Loadout.ContainsKey(i.Type))
+                if (job.Loadout.ContainsKey(Enum.GetName(typeof(ItemType), i.Type)))
                     e.Player.RemoveItem(i);
             }
         }

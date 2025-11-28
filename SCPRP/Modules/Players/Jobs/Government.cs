@@ -82,12 +82,18 @@ namespace SCPRP.Modules.Players.Jobs
                 Singleton.Wanted.Add(player.UserId, wantedstatus);
 
             HUD.NotifyAll($"{player.GetColouredName()} has been wanted by {officer.GetColouredName()}", top: true);
+            HUD.NotifyAll($"Reason: {reason}", top: true);
         }
 
         public static void Unwant(Player player)
         {
             if (Singleton.Wanted.ContainsKey(player.UserId))
                 Singleton.Wanted.Remove(player.UserId);
+        }
+        public static void Unwarrant(Player player)
+        {
+            if (Singleton.Warranted.ContainsKey(player.UserId))
+                Singleton.Warranted.Remove(player.UserId);
         }
         public static void SetWarranted(Player player, string reason, Player officer)
         {
@@ -98,6 +104,7 @@ namespace SCPRP.Modules.Players.Jobs
                 Singleton.Warranted.Add(player.UserId, wantedstatus);
 
             HUD.NotifyAll($"{player.GetColouredName()} has been warranted by {officer.GetColouredName()}",top:true);
+            HUD.NotifyAll($"Reason: {reason}", top: true);
         }
 
         public override void Load()

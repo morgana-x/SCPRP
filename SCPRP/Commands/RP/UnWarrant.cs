@@ -12,12 +12,12 @@ using SCPRP.Modules.Entities;
 namespace SCPRP.Commands.RP
 {
     [CommandHandler(typeof(ClientCommandHandler))]
-    public class Unwanted : ParentCommand, ICommand
+    public class UnWarrant : ParentCommand, ICommand
     {
-        public override string Command { get; } = "unwant";
-        public override string Description { get; } = ".unwant name";
+        public override string Command { get; } = "unwarrant";
+        public override string Description { get; } = ".unwarrant name";
 
-        public override string[] Aliases { get; } = new string[] { "unwanted" };
+        public override string[] Aliases { get; } = new string[] { "unwarranted" };
         public override void LoadGeneratedCommands() { }
 
         protected override bool ExecuteParent(ArraySegment<string> args, ICommandSender sender, out string response)
@@ -26,13 +26,13 @@ namespace SCPRP.Commands.RP
 
             if (!Modules.Players.Jobs.Government.IsGovernment(p))
             {
-                response = $"Only government roles can un set people as wanted!";
+                response = $"Only government roles can revoke warrants";
                 return false;
             }
 
             if (args.Count < 1)
             {
-                response = "Missing arguments! Correct Usage: .want playername";
+                response = "Missing arguments! Correct Usage: .warrant playername";
                 return false;
             }
 
@@ -44,13 +44,13 @@ namespace SCPRP.Commands.RP
                 return false;
             }
 
-            if (!Modules.Players.Jobs.Government.IsWanted(target))
+            if (!Modules.Players.Jobs.Government.IsWarranted(target))
             {
-                response = $"{target.DisplayName} is not currently wanted!";
+                response = $"{target.DisplayName} is not currently warranted!";
                 return false;
             }
-            Modules.Players.Jobs.Government.Unwant(target);
-            response = $"{target.DisplayName} is no longer wanted!";
+            Modules.Players.Jobs.Government.Unwarrant(target);
+            response = $"{target.DisplayName} is no longer warranted!";
             return true;
         }
     }

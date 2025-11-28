@@ -19,6 +19,7 @@ namespace SCPRP
 
         public Module Modules;
         public Entity Entities;
+        public CustomItem CustomItems;
 
         public static SCPRP Singleton;
 
@@ -32,12 +33,16 @@ namespace SCPRP
 
             Entities = new Entity();
             Entities.Load();
+
+            CustomItems = new CustomItem();
+            CustomItems.Load();
         }
 
         public override void Disable()
         {
             Modules.Unload();
             Entities.Unload();
+            CustomItems.Unload();
         }
 
 

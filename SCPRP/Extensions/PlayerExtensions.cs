@@ -1,6 +1,8 @@
-﻿using LabApi.Features.Wrappers;
+﻿using InventorySystem.Items;
+using LabApi.Features.Wrappers;
 using SCPRP.Modules.DB;
 using SCPRP.Modules.Players;
+using System;
 using UnityEngine;
 
 namespace SCPRP.Extensions
@@ -46,6 +48,18 @@ namespace SCPRP.Extensions
             return Job.GetJobInfo(player);
         }
 
+        public static Item AddItem(this Player player, string item, ItemAddReason reason = ItemAddReason.AdminCommand)
+        {
+            var customitem = CustomItem.GiveItem(player, item, reason);
+            if (customitem != null)
+                return customitem.Item;
+
+            if (!System.Enum.TryParse<ItemType>(item, out ItemType itemtype))
+                return null;
+
+            return player.AddItem(itemtype, reason);
+        }
+
         public static string GetColouredName(this Player player)
         {
             if (player == null) return $"<color #555555>DISCONNECTED</color>";
@@ -79,7 +93,15 @@ namespace SCPRP.Extensions
             {
                 foreach (var v in Entity.Singleton.Entities)
                 {
-                    if (Vector3.Distance(v.CoreObject.transform.position, startPos) > 0.8f) continue;
+                    try
+                    {
+                        if (Vector3.Distance(v.CoreObject.transform.position, startPos) > 0.8f) continue;
+                    }
+                    catch(Exception e)
+                    {
+                        LabApi.Features.Console.Logger.Error(e);
+                        continue;
+                    }
                     return v;
                 }
                 startPos += pl.Camera.forward;
