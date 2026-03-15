@@ -615,6 +615,14 @@ namespace SCPRP.Modules.Players
         }
         public static void SetJob(Player player, string role)
         {
+            var eArgs = new Events.Arguments.Player.JobChangingEventArgs(player, player.GetJob(), role, true);
+            Events.Handlers.PlayerEvents.JobChangingFire(eArgs);
+
+            if (!eArgs.IsAllowed)
+                return;
+
+            role = eArgs.NewJob;
+
             string oldjob = Singleton.PlayerRoles.ContainsKey(player) ? Singleton.PlayerRoles[player] : Singleton.Config.DefaultJob;
             if (!Singleton.PlayerRoles.ContainsKey(player))
                 Singleton.PlayerRoles.Add(player, role);

@@ -1,6 +1,7 @@
 ﻿using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Handlers;
 using LabApi.Features.Wrappers;
+using SCPRP.Events.Arguments.Player;
 using SCPRP.Extensions;
 using SCPRP.Modules.Players.HUD;
 using System.Collections.Generic;
@@ -33,16 +34,25 @@ namespace SCPRP.Modules.Players.Jobs
             Singleton = this;
 
             PlayerEvents.Death += OnDeath;
+
+            Events.Handlers.PlayerEvents.JobChanging += OnJobChanging;
         }
 
         public override void Unload()
         {
             PlayerEvents.Death -= OnDeath;
+            Events.Handlers.PlayerEvents.JobChanging -= OnJobChanging;
         }
 
         void OnDeath(PlayerDeathEventArgs e)
         {
             if (Config.ResetLawsOnDeath && e.Player != null && IsMayor(e.Player))
+                ResetLaws();
+        }
+
+        void OnJobChanging(object s, JobChangingEventArgs e)
+        {
+            if (e.Player != null && IsMayor(e.Player))
                 ResetLaws();
         }
 
