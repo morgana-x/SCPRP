@@ -8,15 +8,20 @@ namespace DarkRP.Modules.DB
     {
         [Description("SQL Server IP address/domain")]
         public string ip { get; set; } = "localhost";
-        [Description("SQL Server IP address/domain")]
+
+        [Description("SQL Server port")]
         public int port { get; set; } = 3306;
+
         [Description("SQL Server Username")]
         public string user { get; set; } = "root";
+
         [Description("SQL Server Password")]
         public string pw { get; set; } = "root";
+
         [Description("SQL Server Database")]
         public string db { get; set; } = "scpsl_rp";
 
+        [Description("SQL Server Table (Will auto create a table of this name)")]
         public string table { get; set; } = "rp_money";
     }
 
