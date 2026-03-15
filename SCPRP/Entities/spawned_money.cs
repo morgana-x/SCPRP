@@ -1,6 +1,6 @@
 ﻿using LabApi.Features.Wrappers;
 using SCPRP.Extensions;
-using SCPRP.Modules.Players;
+using SCPRP.Modules.Players.HUD;
 using UnityEngine;
 
 namespace SCPRP.Entities
@@ -59,7 +59,7 @@ namespace SCPRP.Entities
 
         public override void OnInteract(Player player)
         {
-            HUD.Notify(player, $"<color=green>Picked up ${_amount}</color>");
+            player.Notify($"Picked up ${_amount}", Notification.NotifyType.Info);
             player.AddMoney(_amount);
             _amount = 0;
             Destroy();

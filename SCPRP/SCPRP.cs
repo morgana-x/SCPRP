@@ -1,12 +1,10 @@
 ﻿using LabApi.Features;
-using LabApi.Features.Wrappers;
 using LabApi.Loader.Features.Plugins;
-using SCPRP.Modules.Items;
 using System;
 
 namespace SCPRP
 {
-    public class SCPRP : Plugin<Config>
+    public class SCPRP : Plugin
     {
         public override string Name => "SCPRP";
 

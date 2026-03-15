@@ -1,7 +1,7 @@
 ﻿using LabApi.Features.Wrappers;
 using SCPRP.Entities;
 using SCPRP.Extensions;
-using SCPRP.Modules.Players;
+using SCPRP.Modules.Players.HUD;
 
 namespace SCPRP.Modules.Entities
 {
@@ -20,11 +20,12 @@ namespace SCPRP.Modules.Entities
         {
             if (player.GetMoney() < amount)
             {
-                HUD.Notify(player, "<color=red>Insufficient funds!</color>");
+                player.Notify("Insufficient funds!", Notification.NotifyType.Error );
                 return null;
             }
             player.AddMoney(-amount);
-            HUD.Notify(player, $"<color=green>Dropped ${amount}</color>");
+            player.Notify($"Dropped ${amount}", Notification.NotifyType.Success);
+
             return DropMoney(player.Camera.position + (player.Camera.forward * 0.8f), UnityEngine.Quaternion.Euler(player.Rotation.eulerAngles.x, 0, 0), amount);
         }
 

@@ -6,6 +6,7 @@ using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Handlers;
 using LabApi.Features.Wrappers;
 using SCPRP.Extensions;
+using SCPRP.Modules.Players.HUD;
 
 namespace SCPRP.Modules.Players.Jobs
 {
@@ -81,8 +82,8 @@ namespace SCPRP.Modules.Players.Jobs
             else
                 Singleton.Wanted.Add(player.UserId, wantedstatus);
 
-            HUD.NotifyAll($"{player.GetColouredName()} has been wanted by {officer.GetColouredName()}", top: true);
-            HUD.NotifyAll($"Reason: {reason}", top: true);
+            Notifications.NotifyAll($"{player.GetColouredName()} has been wanted by {officer.GetColouredName()}", top: true);
+            Notifications.NotifyAll($"Reason: {reason}", top: true);
         }
 
         public static void Unwant(Player player)
@@ -103,8 +104,8 @@ namespace SCPRP.Modules.Players.Jobs
             else
                 Singleton.Warranted.Add(player.UserId, wantedstatus);
 
-            HUD.NotifyAll($"{player.GetColouredName()} has been warranted by {officer.GetColouredName()}",top:true);
-            HUD.NotifyAll($"Reason: {reason}", top: true);
+            Notifications.NotifyAll($"{player.GetColouredName()} has been warranted by {officer.GetColouredName()}",top:true);
+            Notifications.NotifyAll($"Reason: {reason}", top: true);
         }
 
         public override void Load()
@@ -129,7 +130,7 @@ namespace SCPRP.Modules.Players.Jobs
         {
             if (IsWanted(e.Player))
             {
-                HUD.NotifyAll($"{e.Player.GetColouredName()} is no longer wanted!", top: true);
+                Notifications.NotifyAll($"{e.Player.GetColouredName()} is no longer wanted!", top: true);
                 Unwant(e.Player);
             }
         }
@@ -139,7 +140,7 @@ namespace SCPRP.Modules.Players.Jobs
             {
                 if (Wanted[item].Expired())
                 {
-                    HUD.NotifyAll($"{Wanted[item].WantedPlayer.GetColouredName()} is no longer wanted!", top:true);
+                    Notifications.NotifyAll($"{Wanted[item].WantedPlayer.GetColouredName()} is no longer wanted!", top:true);
                     Wanted.Remove(item);
                 }
             }
@@ -147,7 +148,7 @@ namespace SCPRP.Modules.Players.Jobs
             {
                 if (Warranted[item].Expired())
                 {
-                    HUD.NotifyAll($"{Wanted[item].WantedPlayer.GetColouredName()} is no longer warranted!", top:true);
+                    Notifications.NotifyAll($"{Wanted[item].WantedPlayer.GetColouredName()} is no longer warranted!", top:true);
                     Warranted.Remove(item);
                 }
             }

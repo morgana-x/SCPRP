@@ -1,6 +1,6 @@
 ﻿using LabApi.Features.Wrappers;
 using SCPRP.Extensions;
-using SCPRP.Modules.Players;
+using SCPRP.Modules.Players.HUD;
 using SCPRP.Modules.Players.Jobs;
 using System;
 using UnityEngine;
@@ -80,7 +80,7 @@ namespace SCPRP.Entities
                 {
                     var reward = 500;
                     player.AddMoney(reward);
-                    player.Notify($"You earnt ${reward} for destroying the printer!");
+                    player.Notify($"You earnt ${reward} for destroying the printer!", Notification.NotifyType.Info);
                 }
             }
         }
@@ -96,7 +96,7 @@ namespace SCPRP.Entities
             var amount = Amount;
             Amount = 0;
             player.AddMoney(amount);
-            HUD.Notify(player, $"<color #55ff55>Picked up ${amount}!</color>");
+            player.Notify($"Picked up ${amount}!", Notification.NotifyType.Success);
             UpdateText();
         }
 

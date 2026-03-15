@@ -14,7 +14,7 @@ namespace SCPRP
     {
         public abstract void Load();
         public abstract void Unload();
-        public abstract void Tick();
+        public virtual void Tick() { }
         public virtual void LoadConfigs()
         {
         }

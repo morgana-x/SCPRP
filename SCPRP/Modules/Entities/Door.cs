@@ -127,7 +127,7 @@ namespace SCPRP.Modules.Entities
         {
             Owner = p;
             Coowners.Clear();
-            _name = Modules.Entities.Door.GetDefaultDoorDefinition(this).Name;
+            _name = Entities.Door.GetDefaultDoorDefinition(this).Name;
             if (Owner == null && Door.IsLocked) { Door.Lock(DoorLockReason.AdminCommand, false); }
             UpdateText();
         }
@@ -168,17 +168,17 @@ namespace SCPRP.Modules.Entities
             if (Owned) { return; }
             if (p.GetMoney() < Price)
             {
-                p.Notify("<color=red>You can't afford this door!</color>");
+                p.Notify("You can't afford this door!", Players.HUD.Notification.NotifyType.Error);
                 return;
             }
             if (Entities.Door.GetOwnedDoors(p).Count >= Modules.Entities.Door.Singleton.Config.MaxDoors)
             {
-                p.Notify("<color=red>Reached max amount of doors!</color>");
+                p.Notify("Reached max amount of doors!", Players.HUD.Notification.NotifyType.Error);
                 return;
             }
             p.AddMoney(-Price);
             SetOwner(p);
-            p.Notify($"<color=green>Bought door for ${Price}</color>");
+            p.Notify($"Bought door for ${Price}!", Players.HUD.Notification.NotifyType.Success);
         }
 
         public void Sell()
@@ -187,7 +187,7 @@ namespace SCPRP.Modules.Entities
             SetOwner(null);
 
             owner.AddMoney((int)(Price * 0.85));
-            owner.Notify($"<color=green>Sold door for ${(int)(Price * 0.85)}</color>");
+            owner.Notify($"Sold door for ${(int)(Price * 0.85)}", Players.HUD.Notification.NotifyType.Success);
         }
         public void TextVisible(bool visible)
         {

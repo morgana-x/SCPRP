@@ -62,8 +62,8 @@ namespace SCPRP.Modules.Players.Jobs
                 e.Attacker.AddMoney(hitamount);
                 RemoveHit(e.Player);
 
-                e.Attacker.Notify($"Collected {e.Player.DisplayName}'s ${hitamount} bounty!");
-                e.Player.Notify($"You were killed by hitmen for your ${hitamount} bounty!");
+                e.Attacker.Notify($"Collected {e.Player.DisplayName}'s ${hitamount} bounty!",  HUD.Notification.NotifyType.Success);
+                e.Player.Notify($"You were killed by hitmen for your ${hitamount} bounty!", HUD.Notification.NotifyType.Info);
             }
         }
 

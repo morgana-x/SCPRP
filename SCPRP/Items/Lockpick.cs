@@ -41,7 +41,7 @@ namespace SCPRP.Items
 
             LockpickingEnd = DateTime.Now.AddSeconds(LockpickingDuration);
             LockpickingDoor = rpdoor;
-            player.Notify("Lockpicking...");
+            player.Notify("Lockpicking...", Modules.Players.HUD.Notification.NotifyType.Info);
         }
         public override void OnGive(Player player)
         {
@@ -71,7 +71,7 @@ namespace SCPRP.Items
             {
                 LockpickingDoor.Door.IsOpened = true;
                 LockpickingDoor = null;
-                player.Notify("Lockpicked door!");
+                player.Notify("Lockpicked door!", Modules.Players.HUD.Notification.NotifyType.Success);
                 return;
             }
 
@@ -81,7 +81,7 @@ namespace SCPRP.Items
                 if (player.GetLookingDoor() != LockpickingDoor.Door)
                 {
                     LockpickingDoor = null;
-                    player.Notify("Cancelled lockpicking!");
+                    player.Notify("Cancelled lockpicking!", Modules.Players.HUD.Notification.NotifyType.Error);
                     return;
                 }
             }
@@ -89,7 +89,7 @@ namespace SCPRP.Items
             if (DateTime.Now >= nextHint)
             {
                 nextHint = DateTime.Now.AddSeconds(4);
-                player.Notify($"Lockpicking {(int)Math.Round((1f-(LockpickingEnd.Subtract(DateTime.Now).TotalSeconds / LockpickingDuration)) * 100)}%...");
+                player.Notify($"Lockpicking {(int)Math.Round((1f-(LockpickingEnd.Subtract(DateTime.Now).TotalSeconds / LockpickingDuration)) * 100)}%...", Modules.Players.HUD.Notification.NotifyType.Info);
             }
 
      

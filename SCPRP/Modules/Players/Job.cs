@@ -9,9 +9,9 @@ using Exiled.API.Extensions;
 using SCPRP.Extensions;
 using System.Linq;
 using System.Globalization;
-using SCPRP.Modules.Players.Jobs;
-using Unity.Jobs;
 using SCPRP.Modules.Items;
+using SCPRP.Modules.Players.HUD;
+using SCPRP.Modules.Map;
 
 namespace SCPRP.Modules.Players
 {
@@ -322,7 +322,7 @@ namespace SCPRP.Modules.Players
 
                 Team = "government"
             },
-            ["overseer"] = new JobDefinition(new Dictionary<ItemType, ushort>() { [ItemType.KeycardO5] = 1, [ItemType.Radio] = 1 })
+            ["mayor"] = new JobDefinition(new Dictionary<ItemType, ushort>() { [ItemType.KeycardO5] = 1, [ItemType.Radio] = 1 })
             {
                 Name = "Overseer",
                 Description = "Controls the facility (>:3), Guards must follow their orders",
@@ -433,12 +433,8 @@ namespace SCPRP.Modules.Players
                 e.Player.Health = e.Player.MaxHealth;
        
             }
-            var spawn = SCPRP.Singleton.Config.MapConfig.Spawnpoint;
-            if (spawn.GetSpawnPosition() == UnityEngine.Vector3.zero)
-                spawn = new SpawnDefinition(RoleTypeId.ClassD);
-
            
-            e.Player.Position = spawn.GetSpawnPosition();
+            e.Player.Position = Map.Map.GetSpawn().GetSpawnPosition();
             
             SendSyncFakeJobBadges(e.Player);
             SendFakeJobBadgeAll(e.Player);
@@ -482,7 +478,7 @@ namespace SCPRP.Modules.Players
             if (!shouldDrop(e.Player, e.Item))
             {
                 e.IsAllowed = false;
-                HUD.Notify(e.Player, "<color=red>Cannot drop loadout item!</color>");
+                Notifications.Notify(e.Player, "<color=red>Cannot drop loadout item!</color>");
             }
         }
 
@@ -501,7 +497,7 @@ namespace SCPRP.Modules.Players
             if (!shouldDrop(e.Player, CustomItem.GetItemFromID(e.Pickup.Base.ItemId))) ;
             {
                 e.IsAllowed = false;
-                HUD.Notify(e.Player, "<color=red>Cannot drop loadout item!</color>");
+                Notifications.Notify(e.Player, "<color=red>Cannot drop loadout item!</color>");
             }
         }
 
@@ -609,10 +605,11 @@ namespace SCPRP.Modules.Players
                 response = $"<color=red>Wait {(int)Math.Round(nextChangeJob.Subtract(DateTime.Now).TotalSeconds)} seconds until changing jobs again!</color>";
                 return false;
             }
+
             SetNextJobChange(player, DateTime.Now.AddSeconds(15));
 
             Job.SetJob(player, role);
-            HUD.NotifyAll($"{player.DisplayName} has become a {Job.GetColouredJobName(role)}!");
+            Notifications.NotifyAll($"{player.DisplayName} has become a {Job.GetColouredJobName(role)}!");
             response = $"{player.DisplayName} has become a {Job.GetColouredJobName(role)}!";
             return true;
         }
@@ -629,12 +626,8 @@ namespace SCPRP.Modules.Players
             if (Singleton.Config.UseJobSpawnpoint || GetJobInfo(role).ForceUseSpawnpoint)
             {
                 player.SetRole(GetJobInfo(role).Model, RoleChangeReason.RemoteAdmin, RoleSpawnFlags.UseSpawnpoint & RoleSpawnFlags.AssignInventory);
-                
-                var spawnp = GetJobInfo(role).Spawnpoint;
-                if (spawnp.GetSpawnPosition() == Vector3.zero)
-                    spawnp = SCPRP.Singleton.Config.MapConfig.Spawnpoint;
 
-                player.Position = spawnp.GetSpawnPosition();
+                player.Position = Map.Map.GetSpawnRole(role).GetSpawnPosition();
             }
             else
             {
@@ -765,7 +758,7 @@ namespace SCPRP.Modules.Players
                     if (job == null) continue;
                     if (job.Payday == 0) continue;
                     p.AddMoney(job.Payday);
-                    HUD.Notify(p, $"Payday! Received ${job.Payday}!");
+                    Notifications.Notify(p, $"Payday! Received ${job.Payday}!");
                 }
             }
         }

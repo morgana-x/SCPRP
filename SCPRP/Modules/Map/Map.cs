@@ -1,13 +1,11 @@
 ﻿using LabApi.Features.Extensions;
 using MapGeneration;
 using PlayerRoles;
-using SCPRP.Entities;
-using SCPRP.Modules.DB;
-using SCPRP.Modules.Entities;
 using SCPRP.Modules.Players;
-using SCPRP.Modules.Players.Jobs;
 using System.Linq;
-namespace SCPRP
+using System.Numerics;
+
+namespace SCPRP.Modules.Map
 {
     public class SpawnDefinition
     {
@@ -51,18 +49,40 @@ namespace SCPRP
 
 
     }
-
     public class MapConfig
     {
-        public SpawnDefinition Spawnpoint { get; set; } = new SpawnDefinition(new UnityEngine.Vector3(0.358f, 300.960f, -8.196f));
+        public SpawnDefinition Spawnpoint { get; set; } = new SpawnDefinition(RoleTypeId.ClassD);
     }
 
-    public class Config
+    public class Map : BaseModule<MapConfig>
     {
-        public DatabaseConfig DatabaseConfig { get; set; } = new DatabaseConfig();
-        
-        public MoneyConfig MoneyConfig { get; set; } = new MoneyConfig();
+        public static Map Singleton;
+        public override void Load()
+        {
+            Singleton = this;
+        }
 
-        public MapConfig MapConfig { get; set; } = new MapConfig();
+        public override void Unload()
+        {
+            
+        }
+
+        public static SpawnDefinition GetSpawn()
+        {
+            var spawn = Singleton.Config.Spawnpoint;
+            if (spawn.GetSpawnPosition() == UnityEngine.Vector3.zero)
+                return new SpawnDefinition(RoleTypeId.ClassD);
+
+            return spawn;
+        }
+
+        public static SpawnDefinition GetSpawnRole(string role)
+        {
+            var spawnp = Job.GetJobInfo(role).Spawnpoint;
+            if (spawnp.GetSpawnPosition() == UnityEngine.Vector3.zero)
+                return GetSpawn();
+
+            return spawnp;
+        }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using System;
 using System.ComponentModel;
-using LabApi.Features.Wrappers;
 
 namespace SCPRP.Modules.DB
 {
@@ -21,26 +20,24 @@ namespace SCPRP.Modules.DB
         public string table { get; set; } = "rp_money";
     }
 
-    public class MoneyConfig
-    {
-        public int StartingMoney { get; set; } = 20000;
-    }
 
-    public class Database : BaseModule
+    public class Database : BaseModule<DatabaseConfig>
     {
         public static MySqlConnection DB;
-
-        public static DatabaseConfig Config { get { return SCPRP.Singleton.Config.DatabaseConfig;  } }
-
-        static bool ConnectDB()
+        public static Database Singleton;
+        internal static bool ConnectDB()
         {
             if (DB != null && DB.State != System.Data.ConnectionState.Closed) { DB.Close(); }
-            DB = new MySql.Data.MySqlClient.MySqlConnection($"server={Config.ip};user={Config.user};database={Config.db};port={Config.port};password={Config.pw}");
+
+            var config = Singleton.Config;
+            if (config == null) return false;
+
+            DB = new MySqlConnection($"server={config.ip};user={config.user};database={config.db};port={config.port};password={config.pw}");
             DB.Open();
 
             try
             {
-                var cmd = new MySqlCommand($@"CREATE TABLE IF NOT EXISTS `{Config.table}` (id VARCHAR(255) PRIMARY KEY, money BIGINT);", DB);
+                var cmd = new MySqlCommand($@"CREATE TABLE IF NOT EXISTS `{config.table}` (id VARCHAR(255) PRIMARY KEY, money BIGINT);", DB);
                 var affect = cmd.ExecuteNonQuery();
                 cmd.Dispose();
             }
@@ -53,6 +50,7 @@ namespace SCPRP.Modules.DB
         }
         public override void Load()
         {
+            Singleton = this;
             ConnectDB();
         }
 
@@ -61,68 +59,8 @@ namespace SCPRP.Modules.DB
             
         }
 
-        public static long GetMoney(string userid)
-        {
-            if (DB == null || DB.State != System.Data.ConnectionState.Open)
-            {
-                if (!ConnectDB())
-                    return 0;
-            }
-            try
-            {
-                var cmd = new MySqlCommand($@"SELECT money FROM {Config.table} WHERE id='{userid}';", DB);
-                var rd = cmd.ExecuteReader();
-                long value = 0;
-                try
-                {
-                   
-                    if (rd.Read())
-                    {
-                        value = rd.GetInt64(0);
-                    }
-                    else // If there's no entry for the player, set their money to the starting amount
-                    {
-                        rd.Close();
-                        SetMoney(userid, SCPRP.Singleton.Config.MoneyConfig.StartingMoney);
-                        value = SCPRP.Singleton.Config.MoneyConfig.StartingMoney;
-                    }
-                  
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.ToString());
-                }
+
    
-                rd.Close();
-                cmd.Dispose();
-                return value;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-                return 0;
-            }
-        }
-
-        public static void SetMoney(string userid, long amount)
-        {
-            if (DB == null || DB.State != System.Data.ConnectionState.Open) {
-                return;
-            }
-
-            var cmd = new MySqlCommand($@"REPLACE INTO {Config.table} (id, money) VALUES ('{userid}', {amount});", DB);
-            cmd.ExecuteNonQuery();
-            cmd.Dispose();
-        }
-
-        public static void AddMoney(string userid, long amount)
-        {
-            SetMoney(userid, Math.Min(Math.Max(GetMoney(userid) + amount, 0), long.MaxValue - 1));
-        }
-
-        public static void AddMoney(Player pl, long amount) => AddMoney(pl.UserId, amount);
-        public static void SetMoney(Player pl, long amount) => SetMoney(pl.UserId, amount);
-        public static long GetMoney(Player pl) => GetMoney(pl.UserId);
 
         public override void Unload()
         {

@@ -3,6 +3,7 @@ using LabApi.Features.Wrappers;
 using SCPRP.Modules.DB;
 using SCPRP.Modules.Items;
 using SCPRP.Modules.Players;
+using SCPRP.Modules.Players.HUD;
 using System;
 using UnityEngine;
 
@@ -12,26 +13,26 @@ namespace SCPRP.Extensions
     {
         public static long GetMoney(this Player player)
         {
-            return Database.GetMoney(player);
+            return Money.GetMoney(player);
         }
 
         public static void SetMoney(this Player player, long amount)
         {
-            Database.SetMoney(player, amount);
+            Money.SetMoney(player, amount);
         }
 
         public static void AddMoney(this Player player, long amount)
         {
-            Database.AddMoney(player, amount);
+            Money.AddMoney(player, amount);
         }
 
-        public static void Notify(this Player player, string text)
+        public static void Notify(this Player player, string text, Notification.NotifyType notifyType)
         {
-            HUD.Notify(player, text);
+            Notifications.Notify(player, text, type:notifyType);
         }
-        public static void NotifyTop(this Player player, string text)
+        public static void NotifyTop(this Player player, string text, Notification.NotifyType notifyType)
         {
-            HUD.NotifyTop(player, text);
+            Notifications.NotifyTop(player, text, type: notifyType);
         }
 
         public static void SetJob(this Player player, string job)

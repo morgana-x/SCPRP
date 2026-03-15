@@ -108,7 +108,7 @@ namespace SCPRP.Modules.Items
             var newcustomitem = GetCustomItem(e.NewItem);
             if (newcustomitem != null)
             {
-                e.Player.Notify($"Selected <color=yellow>{newcustomitem.GetType().Name}</color>");
+                e.Player.Notify($"Selected <color=yellow>{newcustomitem.GetType().Name}</color>", Players.HUD.Notification.NotifyType.Info);
                 newcustomitem.OnEquip(e.Player);
             }
             var oldcustomitem = GetCustomItem(e.OldItem);

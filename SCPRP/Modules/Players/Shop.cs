@@ -3,6 +3,7 @@ using InventorySystem;
 using LabApi.Features.Wrappers;
 using SCPRP.Entities;
 using SCPRP.Extensions;
+using SCPRP.Modules.Players.HUD;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -150,7 +151,7 @@ namespace SCPRP.Modules.Players
         {
             if (!System.Enum.TryParse(item.Entity, out ItemType gameItem))
             {
-                HUD.Notify(p, $"<color #ff5555>ERROR SHIPMENT ITEM WAS INVALID</color>");
+                p.Notify($"ERROR SHIPMENT ITEM WAS INVALID", Notification.NotifyType.Error);
                 return;
             }
 
@@ -179,27 +180,27 @@ namespace SCPRP.Modules.Players
         {
             if (!item.CanPurchase(p))
             {
-                HUD.Notify(p, $"<color #ff5555>Not allowed to purchase this entity! Wrong job/rank!</color>");
+                p.Notify($"Not allowed to purchase this entity! Wrong job/rank!", HUD.Notification.NotifyType.Error);
                 return;
             }
             if (p.GetMoney() < item.Price)
             {
-                HUD.Notify(p, $"<color #ff5555>Cannot afford this entity!</color>");
+                p.Notify($"Cannot afford this entity!", HUD.Notification.NotifyType.Error);
                 return;
             }
             if (!item.IsShipment && Entity.Singleton.GetEntities(p, item.Entity).Count >= item.Max)
             {
-                HUD.Notify(p, $"<color #ff5555>Reached limit of {item.Max} {item.Entity}s!</color>");
+                p.Notify($"Reached limit of {item.Max} {item.Entity}s!", HUD.Notification.NotifyType.Error);
                 return;
             }
             else if (item.IsShipment && item.ShipmentAmount > 1 && Entity.Singleton.GetEntities(p, "spawned_shipment").Count >= shopConfig.MaxShipments)
             {
-                HUD.Notify(p, $"<color #ff5555>Reached limit of {shopConfig.MaxShipments} spawned_shipments!</color>");
+                p.Notify( $"Reached limit of {shopConfig.MaxShipments} spawned_shipments!", HUD.Notification.NotifyType.Error);
                 return;
             }
 
             p.AddMoney(-item.Price);
-            HUD.Notify(p, $"<color #55ff55>Purchased {item.Entity} for ${item.Price}!</color>");
+            p.Notify($"<color #55ff55>Purchased {item.Entity} for ${item.Price}!</color>", HUD.Notification.NotifyType.Success);
 
             if (item.IsShipment)
                 SpawnShipment(p, item);

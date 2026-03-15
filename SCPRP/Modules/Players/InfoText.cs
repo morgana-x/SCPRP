@@ -86,7 +86,7 @@ namespace SCPRP.Modules.Players
             if (pl != targetToShow)
             {
                 if (Government.IsWanted(pl))
-                    format += "<color=red>!</color><color=blue>WANTED</color><color=red>!</color><br>";
+                    format += "<color=red>!</color><color=#f14857>WANTED</color><color=red>!</color><br>";
                 if (Hitman.GetHit(pl) > 0 && Hitman.IsHitman(targetToShow))
                     format += $"<color=red>Hit ${Hitman.GetHit(pl)}</color><br>";
             }

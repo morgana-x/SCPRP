@@ -75,7 +75,7 @@ namespace SCPRP.Items
 
             if (door.Owner != null && !Government.IsWarranted(door.Owner))
             {
-                player.NotifyTop("<color=red>Player isn't warranted! .warrant them!!!</color>");
+                player.NotifyTop("Player isn't warranted! .warrant them!!!", Modules.Players.HUD.Notification.NotifyType.Error);
                 return;
             }
 
