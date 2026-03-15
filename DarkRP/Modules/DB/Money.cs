@@ -5,6 +5,7 @@ using DarkRP.Modules.Players.HUD;
 using LabApi.Features.Wrappers;
 using MySql.Data.MySqlClient;
 using System;
+using System.Collections.Generic;
 
 namespace DarkRP.Modules.DB
 {
@@ -111,7 +112,5 @@ namespace DarkRP.Modules.DB
 
             return DropMoney(player.Camera.position + (player.Camera.forward * 0.8f), UnityEngine.Quaternion.Euler(player.Rotation.eulerAngles.x, 0, 0), amount);
         }
-
-
     }
 }
