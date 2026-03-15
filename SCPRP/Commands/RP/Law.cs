@@ -13,7 +13,7 @@ namespace SCPRP.Commands.RP
         public override string Command { get; } = "law";
         public override string Description { get; } = ".law add/remove/reset law/index)";
 
-       // public override string[] Aliases { get; } = new string[] { "law" };
+        public override string[] Aliases { get; } = new string[] { };
         public override void LoadGeneratedCommands() { }
 
         protected override bool ExecuteParent(ArraySegment<string> args, ICommandSender sender, out string response)
