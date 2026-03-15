@@ -4,6 +4,7 @@ using CommandSystem;
 using LabApi.Features.Wrappers;
 using DarkRP.Extensions;
 using DarkRP.Modules.Entities;
+using DarkRP.Modules.DB;
 
 namespace DarkRP.Commands.DarkRP
 {

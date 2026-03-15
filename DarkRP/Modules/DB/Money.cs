@@ -1,4 +1,8 @@
-﻿using LabApi.Features.Wrappers;
+﻿using DarkRP.Entities;
+using DarkRP.Extensions;
+using DarkRP.Modules.Entities;
+using DarkRP.Modules.Players.HUD;
+using LabApi.Features.Wrappers;
 using MySql.Data.MySqlClient;
 using System;
 
@@ -86,6 +90,27 @@ namespace DarkRP.Modules.DB
         public static void AddMoney(Player pl, long amount) => AddMoney(pl.UserId, amount);
         public static void SetMoney(Player pl, long amount) => SetMoney(pl.UserId, amount);
         public static long GetMoney(Player pl) => GetMoney(pl.UserId);
+
+        public static BaseEntity DropMoney(UnityEngine.Vector3 Position, UnityEngine.Quaternion Rotation, long amount)
+        {
+            var dropped_money = Entity.Singleton.CreateEntity("spawned_money");
+            ((spawned_money)dropped_money).Amount = amount;
+            dropped_money.Spawn(Position, Rotation);
+            return dropped_money;
+        }
+
+        public static BaseEntity? DropMoney(Player player, long amount)
+        {
+            if (player.GetMoney() < amount)
+            {
+                player.Notify("Insufficient funds!", Notification.NotifyType.Error);
+                return null;
+            }
+            player.AddMoney(-amount);
+            player.Notify($"Dropped ${amount}", Notification.NotifyType.Success);
+
+            return DropMoney(player.Camera.position + (player.Camera.forward * 0.8f), UnityEngine.Quaternion.Euler(player.Rotation.eulerAngles.x, 0, 0), amount);
+        }
 
 
     }
