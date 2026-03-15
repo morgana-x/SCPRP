@@ -3,6 +3,7 @@ using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Handlers;
 using LabApi.Features.Wrappers;
 using DarkRP.Extensions;
+
 namespace DarkRP.Modules.Players.Jobs
 {
     public class HitmanConfig
